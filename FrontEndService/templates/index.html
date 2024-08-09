@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+<script type="text/javascript" src="https://cdn.tailwindcss.com"></script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -9,28 +10,37 @@
         <title>TaxarificHomePage</title>
     </head>
 
-    <body>
-        <header>
+    <body class="bg-[816C61] flex flex-col h-screen justify-between">
+        <header class="bg-[#2a2c24] text-[#cfcfea]">
             <div class="container mx-auto ">
-                <h1 class="text-4xl font-bold text-center">Taxarific</hh1>
-                <nav class="flex justify-center mt-4">
-                    <a href="/login" class="mx-2">Login</a>
-                    <a href="/signup" class="mx-2">Sign Up</a>
+                <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+                    <a href="/" class="text-xl font-bold" hx-get="/" hx-target="#content">Taxarific</a>
+                    <div>
+                        <a href="/tax/submit" class="mx-2">Submit Tax</a>
+                        <a href="/tax/view" class="mx-2">View Tax</a>
+                    </div>
+                    <div>
+                        <a href="/login" class="mx-2">Login</a>
+                        <a href="/signup" class="mx-2">Sign Up</a>
+                    </div>
                 </nav>
             </div>
         </header>
+
         <main>
-            <div class="container mx-auto mt-8">
-                <h2 class="text-2xl font-bold text-center">Welcome to Taxarific</h2>
+            <div class="bg-[A89B9D] rounded-xl container mx-auto mt-8 items-center">
+                <h2 class="text-2xl  font-bold text-center">Welcome to Taxarific</h2>
                 <p class="text-center">Taxarific is a company that aimes to help make your taxes fast and easy. Employing accountants to do the work behind the sceans</p>
-                <div class="flex justify-center mt-4">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" hx-get="/tax/submit">Get Started</button>
-                <div>
+                <div class="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
+                    <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" hx-get="/tax/submit">Get Started</button>
+                </div>
+
             </div>
         </main>
-        <footer>
+
+        <footer class="bg-[#2a2c24] text-[#cfcfea]">
             <div class="container mx-auto mt-8">
                 <p class="text-center">2024 Taxarific . No rights reserved.</p>
             </div>
     </body>
-</html>
+</html> 

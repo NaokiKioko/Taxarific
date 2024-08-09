@@ -17,7 +17,6 @@ func main() {
 	http.ListenAndServe(":3000", nil)
 }
 
-
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "index.html", nil)
 }
