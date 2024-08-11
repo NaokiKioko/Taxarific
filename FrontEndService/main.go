@@ -12,6 +12,7 @@ func main() {
 	http.HandleFunc("/", handleIndex)
 	http.HandleFunc("/tax", handleTax)
 	http.HandleFunc("/start", handleStart)
+	http.HandleFunc("/quiz", handleQuiz)
 
 	http.ListenAndServe(":3000", nil)
 	print("Server started on port 3000")
@@ -28,6 +29,12 @@ func handleTax(w http.ResponseWriter, r *http.Request) {
 func handleStart(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "start.html", nil)
 }
+
+func handleQuiz(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "quiz.html", nil)
+}
+
+
 
 func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
 	t, err := template.ParseFiles("templates/" + templateName)

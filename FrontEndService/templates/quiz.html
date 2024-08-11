@@ -1,0 +1,65 @@
+<div id="mainDiv" class="bg-[#A89B9D] rounded-xl container mx-auto mt-8 items-center">
+    <h2 class="text-2xl font-bold text-center">Taxarific Quiz</h2>
+    <p class="text-center">Test your tax knowledge with our quick quiz!</p>
+    <div class="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
+        <div id="quiz" class="w-full max-w-lg">
+            <form id="quizForm" action="/submit-quiz" method="POST">
+                <div class="mb-6" id="question1">
+                    <label class="block mb-4 text-[#2A2C24] font-bold">1. What is the deadline for filing taxes?</label>
+                    <div class="flex flex-col">
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="q1" value="April 15th" required>
+                            <span class="ml-2 text-[#2A2C24]">April 15th</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="q1" value="January 1st">
+                            <span class="ml-2 text-[#2A2C24]">January 1st</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="q1" value="December 31st">
+                            <span class="ml-2 text-[#2A2C24]">December 31st</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-6" id="question2">
+                    <label class="block mb-4 text-[#2A2C24] font-bold">2. Which form is used to report income?</label>
+                    <div class="flex flex-col">
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="q2" value="W-2" required>
+                            <span class="ml-2 text-[#2A2C24]">W-2</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="q2" value="1040">
+                            <span class="ml-2 text-[#2A2C24]">1040</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="q2" value="1099">
+                            <span class="ml-2 text-[#2A2C24]">1099</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-6" id="question3">
+                    <label class="block mb-4 text-[#2A2C24] font-bold">3. Which expenses can be deducted?</label>
+                    <div class="flex flex-col">
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="q3" value="Charitable Donations" required>
+                            <span class="ml-2 text-[#2A2C24]">Charitable Donations</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="q3" value="Personal Vacation">
+                            <span class="ml-2 text-[#2A2C24]">Personal Vacation</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="q3" value="Groceries">
+                            <span class="ml-2 text-[#2A2C24]">Groceries</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" type="submit" hx-get="/tax" hx-target="#mainDiv">Submit Quiz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
