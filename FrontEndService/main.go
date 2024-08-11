@@ -2,23 +2,31 @@ package main
 
 import (
 	"html/template"
-	"log"
 	"net/http"
-	"os"
-	"strconv"
 )
 
 func main() {
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	http.HandleFunc("/", handleIndex) // only file with headers/footers
+	http.HandleFunc("/", handleIndex)
+	http.HandleFunc("/tax", handleTax)
+	http.HandleFunc("/start", handleStart)
 
 	http.ListenAndServe(":3000", nil)
+	print("Server started on port 3000")
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "index.html", nil)
+}
+
+func handleTax(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "tax.html", nil)
+}
+
+func handleStart(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "start.html", nil)
 }
 
 func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
