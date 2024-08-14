@@ -10,13 +10,13 @@
         <title>TaxarificHomePage</title>
     </head>
 
-    <body class="bg-[816C61] flex flex-col h-screen justify-between">
+    <body class="bg-[#816C61] flex flex-col h-screen justify-between">
         <header class="bg-[#2a2c24] text-[#cfcfea]">
             <div class="container mx-auto ">
                 <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <a href="/" class="text-xl font-bold" hx-get="/" hx-target="#content">Taxarific</a>
+                    <a href="/start" hx-get="/start" hx-target="#mainDiv" class="mx-2">Taxarific</a>
                     <div>
-                        <a href="/tax/submit" class="mx-2">Submit Tax</a>
+                        <a href="/tax" class="mx-2" hx-get="/tax" hx-target="#mainDiv">Submit Tax</a>
                         <a href="/tax/view" class="mx-2">View Tax</a>
                     </div>
                     <div>
@@ -27,14 +27,8 @@
             </div>
         </header>
 
-        <main>
-            <div class="bg-[A89B9D] rounded-xl container mx-auto mt-8 items-center">
-                <h2 class="text-2xl  font-bold text-center">Welcome to Taxarific</h2>
-                <p class="text-center">Taxarific is a company that aimes to help make your taxes fast and easy. Employing accountants to do the work behind the sceans</p>
-                <div class="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
-                    <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" hx-get="/tax/submit">Get Started</button>
-                </div>
-
+        <main id="mainContent">
+            <div id="mainDiv" hx-get="/start" hx-trigger="load">
             </div>
         </main>
 
