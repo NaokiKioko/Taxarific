@@ -29,6 +29,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserResponseBody"
+    post:
+      tags:
+        - users
+      summary: Create a user
+      description: Create a user that has signed up for taxarific.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: User created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponseBody"
   /user/{userid}:
     put:
       tags:
@@ -48,14 +66,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserResponseBody"
+                  $ref: "#/components/schemas/User"
       responses:
         "200":
           description: User updated successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserResponseBody"
+                  $ref: "#/components/schemas/UserResponseBody"
         "404":
           description: User not found.
   /employee:
@@ -92,14 +110,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EmployeeResponseBody"
+                  $ref: "#/components/schemas/Employee"
       responses:
         "200":
           description: Employee updated successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EmployeeResponseBody"
+                  $ref: "#/components/schemas/EmployeeResponseBody"
         "404":
           description: Employee not found.
   /admin:
@@ -117,6 +135,43 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserResponseBody"
+    post:
+      tags:
+        - admin
+      summary: Create an admin
+      description: Create an admin that has full access.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Admin"
+      responses:
+        "201":
+          description: Admin created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminResponseBody"
+  /admin/employee:
+    post:
+      tags:
+        - admin
+      summary: Create an employee
+      description: Create an employee that is able to take on user cases.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Employee"
+      responses:
+        "201":
+          description: Employee created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeResponseBody"
 components:
   schemas:
     User:
