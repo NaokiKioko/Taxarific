@@ -203,14 +203,37 @@ components:
           type: string
         zip:
           type: string
-        country:
-          type: string
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
+    PostUser:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        phone:
+          type: string
+          format: phone
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
     UserResponseBody:
       type: object
       properties:
@@ -232,8 +255,6 @@ components:
         state:
           type: string
         zip:
-          type: string
-        country:
           type: string
         created_at:
           type: string

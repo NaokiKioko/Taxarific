@@ -24,12 +24,27 @@ type ServerInterface interface {
 	// Get all admins
 	// (GET /admin)
 	GetAdmin(c *gin.Context)
+	// Create an admin
+	// (POST /admin)
+	PostAdmin(c *gin.Context)
+	// Create an employee
+	// (POST /admin/employee)
+	PostAdminEmployee(c *gin.Context)
+	// Get all employees
+	// (GET /employee)
+	GetEmployee(c *gin.Context)
+	// Allows Employees to update certain information
+	// (PUT /employee/{employeeid})
+	PutEmployeeEmployeeid(c *gin.Context, employeeid openapi_types.UUID)
 	// Get all users
 	// (GET /user)
 	GetUser(c *gin.Context)
+	// Create a user
+	// (POST /user)
+	PostUser(c *gin.Context)
 	// Update a user
-	// (PUT /user/{id})
-	PutUserId(c *gin.Context, id openapi_types.UUID)
+	// (PUT /user/{userid})
+	PutUserUserid(c *gin.Context, userid openapi_types.UUID)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -54,6 +69,69 @@ func (siw *ServerInterfaceWrapper) GetAdmin(c *gin.Context) {
 	siw.Handler.GetAdmin(c)
 }
 
+// PostAdmin operation middleware
+func (siw *ServerInterfaceWrapper) PostAdmin(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.PostAdmin(c)
+}
+
+// PostAdminEmployee operation middleware
+func (siw *ServerInterfaceWrapper) PostAdminEmployee(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.PostAdminEmployee(c)
+}
+
+// GetEmployee operation middleware
+func (siw *ServerInterfaceWrapper) GetEmployee(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetEmployee(c)
+}
+
+// PutEmployeeEmployeeid operation middleware
+func (siw *ServerInterfaceWrapper) PutEmployeeEmployeeid(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "employeeid" -------------
+	var employeeid openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "employeeid", c.Param("employeeid"), &employeeid, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter employeeid: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.PutEmployeeEmployeeid(c, employeeid)
+}
+
 // GetUser operation middleware
 func (siw *ServerInterfaceWrapper) GetUser(c *gin.Context) {
 
@@ -67,17 +145,30 @@ func (siw *ServerInterfaceWrapper) GetUser(c *gin.Context) {
 	siw.Handler.GetUser(c)
 }
 
-// PutUserId operation middleware
-func (siw *ServerInterfaceWrapper) PutUserId(c *gin.Context) {
+// PostUser operation middleware
+func (siw *ServerInterfaceWrapper) PostUser(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.PostUser(c)
+}
+
+// PutUserUserid operation middleware
+func (siw *ServerInterfaceWrapper) PutUserUserid(c *gin.Context) {
 
 	var err error
 
-	// ------------- Path parameter "id" -------------
-	var id openapi_types.UUID
+	// ------------- Path parameter "userid" -------------
+	var userid openapi_types.UUID
 
-	err = runtime.BindStyledParameterWithOptions("simple", "id", c.Param("id"), &id, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	err = runtime.BindStyledParameterWithOptions("simple", "userid", c.Param("userid"), &userid, runtime.BindStyledParameterOptions{Explode: false, Required: true})
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter id: %w", err), http.StatusBadRequest)
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter userid: %w", err), http.StatusBadRequest)
 		return
 	}
 
@@ -88,7 +179,7 @@ func (siw *ServerInterfaceWrapper) PutUserId(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.PutUserId(c, id)
+	siw.Handler.PutUserUserid(c, userid)
 }
 
 // GinServerOptions provides options for the Gin server.
@@ -119,25 +210,36 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	}
 
 	router.GET(options.BaseURL+"/admin", wrapper.GetAdmin)
+	router.POST(options.BaseURL+"/admin", wrapper.PostAdmin)
+	router.POST(options.BaseURL+"/admin/employee", wrapper.PostAdminEmployee)
+	router.GET(options.BaseURL+"/employee", wrapper.GetEmployee)
+	router.PUT(options.BaseURL+"/employee/:employeeid", wrapper.PutEmployeeEmployeeid)
 	router.GET(options.BaseURL+"/user", wrapper.GetUser)
-	router.PUT(options.BaseURL+"/user/:id", wrapper.PutUserId)
+	router.POST(options.BaseURL+"/user", wrapper.PostUser)
+	router.PUT(options.BaseURL+"/user/:userid", wrapper.PutUserUserid)
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

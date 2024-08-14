@@ -4,21 +4,99 @@
 package models
 
 import (
+	"time"
+
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// UserWithoutPasswordOrCreatedAt defines model for UserWithoutPasswordOrCreatedAt.
-type UserWithoutPasswordOrCreatedAt struct {
-	Address *string              `json:"address,omitempty"`
-	City    *string              `json:"city,omitempty"`
-	Country *string              `json:"country,omitempty"`
-	Email   *openapi_types.Email `json:"email,omitempty"`
-	Id      *openapi_types.UUID  `json:"id,omitempty"`
-	Name    *string              `json:"name,omitempty"`
-	Phone   *string              `json:"phone,omitempty"`
-	State   *string              `json:"state,omitempty"`
-	Zip     *string              `json:"zip,omitempty"`
+// Admin defines model for Admin.
+type Admin struct {
+	CreatedAt *time.Time          `json:"created_at,omitempty"`
+	Email     openapi_types.Email `json:"email"`
+	Id        openapi_types.UUID  `json:"id"`
+	Name      string              `json:"name"`
+	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
 }
 
-// PutUserIdJSONRequestBody defines body for PutUserId for application/json ContentType.
-type PutUserIdJSONRequestBody = UserWithoutPasswordOrCreatedAt
+// AdminResponseBody defines model for AdminResponseBody.
+type AdminResponseBody struct {
+	CreatedAt *time.Time           `json:"created_at,omitempty"`
+	Email     *openapi_types.Email `json:"email,omitempty"`
+	Id        *openapi_types.UUID  `json:"id,omitempty"`
+	Name      *string              `json:"name,omitempty"`
+	UpdatedAt *time.Time           `json:"updated_at,omitempty"`
+}
+
+// Case defines model for Case.
+type Case struct {
+	CaseDescription *string             `json:"case_description,omitempty"`
+	CaseId          *openapi_types.UUID `json:"case_id,omitempty"`
+	CaseStatus      *string             `json:"case_status,omitempty"`
+	CreatedAt       *time.Time          `json:"created_at,omitempty"`
+	UpdatedAt       *time.Time          `json:"updated_at,omitempty"`
+	UserId          openapi_types.UUID  `json:"user_id"`
+}
+
+// Employee defines model for Employee.
+type Employee struct {
+	Cases     *[]Case             `json:"cases,omitempty"`
+	CreatedAt *time.Time          `json:"created_at,omitempty"`
+	Email     openapi_types.Email `json:"email"`
+	Id        openapi_types.UUID  `json:"id"`
+	Name      string              `json:"name"`
+	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
+}
+
+// EmployeeResponseBody defines model for EmployeeResponseBody.
+type EmployeeResponseBody struct {
+	Cases     *[]Case              `json:"cases,omitempty"`
+	CreatedAt *time.Time           `json:"created_at,omitempty"`
+	Email     *openapi_types.Email `json:"email,omitempty"`
+	Id        *openapi_types.UUID  `json:"id,omitempty"`
+	Name      *string              `json:"name,omitempty"`
+	UpdatedAt *time.Time           `json:"updated_at,omitempty"`
+}
+
+// User defines model for User.
+type User struct {
+	Address   *string             `json:"address,omitempty"`
+	City      *string             `json:"city,omitempty"`
+	CreatedAt *time.Time          `json:"created_at,omitempty"`
+	Email     openapi_types.Email `json:"email"`
+	Id        openapi_types.UUID  `json:"id"`
+	Name      string              `json:"name"`
+	Password  string              `json:"password"`
+	Phone     *string             `json:"phone,omitempty"`
+	State     *string             `json:"state,omitempty"`
+	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
+	Zip       *string             `json:"zip,omitempty"`
+}
+
+// UserResponseBody defines model for UserResponseBody.
+type UserResponseBody struct {
+	Address   *string              `json:"address,omitempty"`
+	City      *string              `json:"city,omitempty"`
+	CreatedAt *time.Time           `json:"created_at,omitempty"`
+	Email     *openapi_types.Email `json:"email,omitempty"`
+	Id        *openapi_types.UUID  `json:"id,omitempty"`
+	Name      *string              `json:"name,omitempty"`
+	Phone     *string              `json:"phone,omitempty"`
+	State     *string              `json:"state,omitempty"`
+	UpdatedAt *time.Time           `json:"updated_at,omitempty"`
+	Zip       *string              `json:"zip,omitempty"`
+}
+
+// PostAdminJSONRequestBody defines body for PostAdmin for application/json ContentType.
+type PostAdminJSONRequestBody = Admin
+
+// PostAdminEmployeeJSONRequestBody defines body for PostAdminEmployee for application/json ContentType.
+type PostAdminEmployeeJSONRequestBody = Employee
+
+// PutEmployeeEmployeeidJSONRequestBody defines body for PutEmployeeEmployeeid for application/json ContentType.
+type PutEmployeeEmployeeidJSONRequestBody = Employee
+
+// PostUserJSONRequestBody defines body for PostUser for application/json ContentType.
+type PostUserJSONRequestBody = User
+
+// PutUserUseridJSONRequestBody defines body for PutUserUserid for application/json ContentType.
+type PutUserUseridJSONRequestBody = User

@@ -14,7 +14,7 @@ func newServer(userAPI *api.API) *gin.Engine {
 	}
 	router := gin.Default()
 	router.Use(middleware.OapiRequestValidator(swagger))
-	api.RegisterHandlers(router, userApi)
+	api.RegisterHandlers(router, userAPI)
 	return router
 }
 

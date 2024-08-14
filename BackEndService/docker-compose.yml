@@ -20,20 +20,6 @@ services:
     restart: on-failure
     networks:
       - taxarific 
-  # MongoDB Exporter
-  dbexporter:
-    image: bitnami/mongodb-exporter:latest
-    environment:
-        - MONGODB_URI=mongodb://monitor:reader@database:27017/?authSource=Games
-    ports:
-        - "9216"
-    depends_on:
-        - database
-    restart: on-failure
-    networks:
-        - taxarific 
-        
-
 volumes:
   db_data: {}
 networks:
