@@ -1,0 +1,228 @@
+openapi: 3.0.0
+info:
+  title: Taxarific Users API
+  version: 1.0.0
+servers:
+  - url: Localhost:8080
+tags:
+  - name: users
+    description: Customers that have signed up for taxarific.
+  - name: admin
+    description: Admins that have full access.
+  - name: employee
+    description: Able to take on user cases and fill out the information based on what the user submitted via pictures.
+  - name: metrics
+    description: Contians metrics for prometheus.
+paths:
+  /user:
+    get:
+      tags:
+        - users
+      summary: Get all users
+      description: Get all users that have signed up for taxarific.
+      responses:
+        "200":
+          description: A list of all users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserResponseBody"
+  /user/{id}:
+    put:
+      tags:
+        - users
+      summary: Update a user
+      description: Update a user that has signed up for taxarific.
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to update.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                  $ref: "#/components/schemas/UserResponseBody"
+      responses:
+        "200":
+          description: User updated successfully.
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/UserResponseBody"
+        "404":
+          description: User not found.
+  /employee:
+    get:
+      tags:
+        - employee
+      summary: Get all employees
+      description: Get all employees that are able to take on user cases.
+      responses:
+        "200":
+          description: A list of all employees.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployeeResponseBody"
+  /employee/{id}:
+    put:
+      tags:
+        - employee
+      summary: Allows Employees to update certain information
+      description: Update an employee that is able to take on user cases.
+      parameters:
+        - name: id
+          in: path
+          description: ID of the employee to update.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                  $ref: "#/components/schemas/EmployeeResponseBody"
+      responses:
+        "200":
+          description: Employee updated successfully.
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/EmployeeResponseBody"
+        "404":
+          description: Employee not found.
+    
+  /admin:
+    get:
+      tags:
+        - admin
+      summary: Get all admins
+      description: Get all admins that have full access.
+      responses:
+        "200":
+          description: A list of all admins.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserResponseBody"
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - password
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        phone:
+          type: string
+          format: phone
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+        country:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    UserResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          format: phone
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+        country:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Employee:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - password
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    EmployeeResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
