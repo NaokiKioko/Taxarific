@@ -6,7 +6,6 @@ import (
 	"taxarific_users_api/services"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type API struct{}
@@ -28,7 +27,7 @@ func (a *API) GetEmployee(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, employee)
+	c.JSON(200, employees)
 }
 
 // GetUser implements ServerInterface.
@@ -51,8 +50,8 @@ func (a *API) PostUser(c *gin.Context) {
 }
 
 // PutEmployeeEmployeeid implements ServerInterface.
-func (a *API) PutEmployeeEmployeeid(c *gin.Context, employeeid uuid.UUID) {
-	user, err := services.GetEmployee(employeeid.String())
+func (a *API) PutEmployeeEmployeeid(c *gin.Context, employeeid string) {
+	user, err := services.GetEmployee(employeeid)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -61,7 +60,7 @@ func (a *API) PutEmployeeEmployeeid(c *gin.Context, employeeid uuid.UUID) {
 }
 
 // PutUserUserid implements ServerInterface.
-func (a *API) PutUserUserid(c *gin.Context, userid uuid.UUID) {
+func (a *API) PutUserUserid(c *gin.Context, userid string) {
 	user := models.User{}
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -94,7 +93,7 @@ func (a *API) PostAdmin(c *gin.Context) {
 
 // PostAdminEmployee implements ServerInterface.
 func (a *API) PostAdminEmployee(c *gin.Context) {
-	panic("unimplemented")
+
 }
 
 func NewAPI() *API {

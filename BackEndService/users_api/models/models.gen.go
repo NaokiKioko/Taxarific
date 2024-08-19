@@ -7,13 +7,14 @@ import (
 	"time"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Admin defines model for Admin.
 type Admin struct {
 	CreatedAt *time.Time          `json:"created_at,omitempty"`
 	Email     openapi_types.Email `json:"email"`
-	Id        openapi_types.UUID  `json:"id"`
+	Id        primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
 	Name      string              `json:"name"`
 	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
 }
@@ -22,7 +23,7 @@ type Admin struct {
 type AdminResponseBody struct {
 	CreatedAt *time.Time           `json:"created_at,omitempty"`
 	Email     *openapi_types.Email `json:"email,omitempty"`
-	Id        *openapi_types.UUID  `json:"id,omitempty"`
+	Id        *primitive.ObjectID  `bson:"_id,omitempty" json:"id,omitempty"`
 	Name      *string              `json:"name,omitempty"`
 	UpdatedAt *time.Time           `json:"updated_at,omitempty"`
 }
@@ -42,7 +43,7 @@ type Employee struct {
 	Cases     *[]Case             `json:"cases,omitempty"`
 	CreatedAt *time.Time          `json:"created_at,omitempty"`
 	Email     openapi_types.Email `json:"email"`
-	Id        openapi_types.UUID  `json:"id"`
+	Id        primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
 	Name      string              `json:"name"`
 	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
 }
@@ -52,7 +53,7 @@ type EmployeeResponseBody struct {
 	Cases     *[]Case              `json:"cases,omitempty"`
 	CreatedAt *time.Time           `json:"created_at,omitempty"`
 	Email     *openapi_types.Email `json:"email,omitempty"`
-	Id        *openapi_types.UUID  `json:"id,omitempty"`
+	Id        *primitive.ObjectID  `bson:"_id,omitempty" json:"id,omitempty"`
 	Name      *string              `json:"name,omitempty"`
 	UpdatedAt *time.Time           `json:"updated_at,omitempty"`
 }
@@ -63,7 +64,7 @@ type User struct {
 	City      *string             `json:"city,omitempty"`
 	CreatedAt *time.Time          `json:"created_at,omitempty"`
 	Email     openapi_types.Email `json:"email"`
-	Id        openapi_types.UUID  `json:"id"`
+	Id        primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
 	Name      string              `json:"name"`
 	Password  string              `json:"password"`
 	Phone     *string             `json:"phone,omitempty"`
@@ -78,7 +79,7 @@ type UserResponseBody struct {
 	City      *string              `json:"city,omitempty"`
 	CreatedAt *time.Time           `json:"created_at,omitempty"`
 	Email     *openapi_types.Email `json:"email,omitempty"`
-	Id        *openapi_types.UUID  `json:"id,omitempty"`
+	Id        *primitive.ObjectID  `bson:"_id,omitempty" json:"id,omitempty"`
 	Name      *string              `json:"name,omitempty"`
 	Phone     *string              `json:"phone,omitempty"`
 	State     *string              `json:"state,omitempty"`

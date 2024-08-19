@@ -5,8 +5,6 @@ import (
 	"reflect"
 	"taxarific_users_api/data"
 	"taxarific_users_api/models"
-
-	"go.mongodb.org/mongo-driver/internal/uuid"
 )
 
 func GetEmployee(id string) (*models.Employee, error) {
@@ -28,6 +26,13 @@ func GetEmployees() (*[]models.Employee, error) {
 	return &result, nil
 }
 
+func DeleteEmployee(id string) error {
+	if id == "" {
+		return errors.New("id is required")
+	}
+	return data.DeleteEmployee(id)
+}
+
 func GetAdmin(id string) (*models.Admin, error) {
 	if id == "" {
 		return nil, errors.New("id is required")
@@ -42,9 +47,16 @@ func GetAdmin(id string) (*models.Admin, error) {
 func GetAdmins() (*[]models.Admin, error) {
 	result, err := data.GetAdmins()
 	if err != nil {
-		return nil, err 
+		return nil, err
 	}
 	return &result, nil
+}
+
+func DeleteAdmin(id string) error {
+	if id == "" {
+		return errors.New("id is required")
+	}
+	return data.DeleteAdmin(id)
 }
 
 func GetUser(id string) (*models.User, error) {
@@ -63,10 +75,10 @@ func GetUsers() (*[]models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &result, nil 
-} 
+	return &result, nil
+}
 
-func PutUser(id uuid.UUID, user models.User) error {
+func PutUser(id string, user models.User) error {
 	if id == "" {
 		return errors.New("id is required")
 	}
@@ -74,4 +86,11 @@ func PutUser(id uuid.UUID, user models.User) error {
 		return errors.New("user is required")
 	}
 	return data.PutUser(id, user)
+}
+
+func DeleteUser(id string) error {
+	if id == "" {
+		return errors.New("id is required")
+	}
+	return data.DeleteUser(id)
 }
