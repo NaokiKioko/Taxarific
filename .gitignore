@@ -22,4 +22,4 @@ go.work
 go.work.sum
 
 # env file
-.env
+BackEndService/users_api/services/data.env
