@@ -89,6 +89,30 @@ func UpdateUser(id string, user models.User) error {
 	return nil
 }
 
+func PutUser(id string, user models.User) error {
+	objId, err := GetObjectID(id)
+	if err != nil {
+		return err
+	}
+	_, err = userCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": user})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteUser(id string) error {
+	objId, err := GetObjectID(id)
+	if err != nil {
+		return err
+	}
+	_, err = userCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // TODO Employees
 func CreateEmployee(employee models.Employee) (string, error) {
 	result, err := employeeCollection().InsertOne(context.Background(), &employee)
@@ -129,6 +153,30 @@ func GetEmployees() ([]models.Employee, error) {
 	return employees, nil
 }
 
+func PutEmployee(id string, employee models.Employee) error {
+	objId, err := GetObjectID(id)
+	if err != nil {
+		return err
+	}
+	_, err = employeeCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": employee})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteEmployee(id string) error {
+	objId, err := GetObjectID(id)
+	if err != nil {
+		return err
+	}
+	_, err = employeeCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // TODO Admins
 func CreateAdmin(admin models.Admin) (string, error) {
 	result, err := adminCollection().InsertOne(context.Background(), &admin)
@@ -167,6 +215,30 @@ func GetAdmin(id string) (models.Admin, error) {
 		return models.Admin{}, err
 	}
 	return admin, nil
+}
+
+func PutAdmin(id string, admin models.Admin) error {
+	objId, err := GetObjectID(id)
+	if err != nil {
+		return err
+	}
+	_, err = adminCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": admin})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteAdmin(id string) error {
+	objId, err := GetObjectID(id)
+	if err != nil {
+		return err
+	}
+	_, err = adminCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Helper functions
