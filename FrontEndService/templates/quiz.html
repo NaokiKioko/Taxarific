@@ -1,0 +1,106 @@
+<div id="mainDiv" class="bg-[#A89B9D] rounded-xl container mx-auto mt-8 my-10 items-center w-fit">
+    <h2 class="text-2xl font-bold text-center">Taxarific Information Form</h2>
+    <p class="text-center">Please provide the necessary information to help us prepare your taxes.</p>
+    <div class="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
+        <div id="infoForm" class="w-full max-w-lg">
+            <form id="taxInfoForm" hx-post="/user/quiz">
+                <!-- Marital Status -->
+                <div class="mb-6">
+                    <label class="block mb-4 text-[#2A2C24] font-bold">1. What is your marital status?</label>
+                    <div class="flex flex-col">
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="maritalStatus" value="Single" required>
+                            <span class="ml-2 text-[#2A2C24]">Single</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="maritalStatus" value="Married">
+                            <span class="ml-2 text-[#2A2C24]">Married</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="maritalStatus" value="Divorced">
+                            <span class="ml-2 text-[#2A2C24]">Divorced</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="maritalStatus" value="Widowed">
+                            <span class="ml-2 text-[#2A2C24]">Widowed</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Number of Dependents -->
+                <div class="mb-6">
+                    <label class="block mb-4 text-[#2A2C24] font-bold">2. How many dependents do you have?</label>
+                    <div class="flex flex-col">
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="dependents" value="0" required>
+                            <span class="ml-2 text-[#2A2C24]">0</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="dependents" value="1">
+                            <span class="ml-2 text-[#2A2C24]">1</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="dependents" value="2">
+                            <span class="ml-2 text-[#2A2C24]">2</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="dependents" value="3 or more">
+                            <span class="ml-2 text-[#2A2C24]">3 or more</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Employment Status -->
+                <div class="mb-6">
+                    <label class="block mb-4 text-[#2A2C24] font-bold">3. What is your current employment status?</label>
+                    <div class="flex flex-col">
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="employmentStatus" value="Employed" required>
+                            <span class="ml-2 text-[#2A2C24]">Employed</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="employmentStatus" value="Self-Employed">
+                            <span class="ml-2 text-[#2A2C24]">Self-Employed</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="employmentStatus" value="Unemployed">
+                            <span class="ml-2 text-[#2A2C24]">Unemployed</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="employmentStatus" value="Retired">
+                            <span class="ml-2 text-[#2A2C24]">Retired</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Income Level -->
+                <div class="mb-6">
+                    <label class="block mb-4 text-[#2A2C24] font-bold">4. What is your estimated annual income?</label>
+                    <div class="flex flex-col">
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="income" value="Under $25,000" required>
+                            <span class="ml-2 text-[#2A2C24]">Under $25,000</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="income" value="$25,000 - $50,000">
+                            <span class="ml-2 text-[#2A2C24]">$25,000 - $50,000</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="income" value="$50,000 - $100,000">
+                            <span class="ml-2 text-[#2A2C24]">$50,000 - $100,000</span>
+                        </label>
+                        <label class="inline-flex items-center mb-2">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="income" value="Over $100,000">
+                            <span class="ml-2 text-[#2A2C24]">Over $100,000</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mt-6">
+                    <button class="bg-[#575A4B] text-[#CFCFEA] hover:bg-[#816C61] hover:text-[#2A2C24] font-bold py-2 px-4 rounded" type="submit" hx-get="/tax" hx-target="#mainDiv">Submit Information</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

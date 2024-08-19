@@ -14,14 +14,15 @@
         <header class="bg-[#2a2c24] text-[#cfcfea]">
             <div class="container mx-auto ">
                 <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <a href="/start" hx-get="/start" hx-target="#mainDiv" class="mx-2">Taxarific</a>
+                    <a hx-get="/start" hx-target="#mainDiv" class="mx-2 font-bold">Taxarific</a>
                     <div>
-                        <a href="/tax" class="mx-2" hx-get="/tax" hx-target="#mainDiv">Submit Tax</a>
-                        <a href="/tax/view" class="mx-2">View Tax</a>
+                        <a class="mx-2" hx-get="/tax" hx-target="#mainDiv">Submit Tax</a>
+                        <a class="mx-2" hx-get="/tax" hx-target="#mainDiv">View Tax</a>
                     </div>
-                    <div>
-                        <a href="/login" class="mx-2">Login</a>
-                        <a href="/signup" class="mx-2">Sign Up</a>
+                    <div id="loginDiv">
+                        <a hx-get="/login" hx-target="#mainDiv" class="mx-2">Login</a>
+                        <a class="mx-2"> / </a>
+                        <a hx-get="/signup" hx-target="#mainDiv" class="mx-2">Sign Up</a>
                     </div>
                 </nav>
             </div>
