@@ -4,8 +4,6 @@ services:
     build: ./BackEndService/users_api
     ports:
       - "8080"
-    depends_on:
-      - database
     restart: on-failure
     networks:
       - taxarific 
@@ -17,7 +15,7 @@ services:
     restart: on-failure
     networks:
       - taxarific
-      
+
   # DataBase
   # database:
   #   image: mongo:latest
