@@ -4,6 +4,8 @@ import (
 	"taxarific_users_api/data"
 	"taxarific_users_api/models"
 	"taxarific_users_api/services"
+	"html/template"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +19,9 @@ func (a *API) GetAdmin(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, admins)
+	renderTemplate(c.Writer, "Users.html", map[string]interface{}{
+		"users": admins,
+	})
 }
 
 // GetEmployee implements ServerInterface.
@@ -27,7 +31,9 @@ func (a *API) GetEmployee(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, employees)
+	renderTemplate(c.Writer, "Employees.html", map[string]interface{}{
+		"employees": employees,
+	})
 }
 
 // GetUser implements ServerInterface.
@@ -37,7 +43,10 @@ func (a *API) GetUser(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, users)
+	renderTemplate(c.Writer, "Users.html", map[string]interface{}{
+		"users": users,
+	})
+	
 }
 
 // PostUser implements ServerInterface.
@@ -98,4 +107,17 @@ func (a *API) PostAdminEmployee(c *gin.Context) {
 
 func NewAPI() *API {
 	return &API{}
+}
+
+func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
+	t, err := template.ParseFiles("templates/" + templateName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = t.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
