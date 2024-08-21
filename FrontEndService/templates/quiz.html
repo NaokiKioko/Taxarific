@@ -5,7 +5,7 @@
         <div id="infoForm" class="w-full max-w-lg">
             <form id="taxInfoForm" hx-post="/user/quiz">
                 <!-- Marital Status -->
-                <div class="mb-6">
+                <div class="bg-[#c7c1c2] rounded-xl px-2 my-3">
                     <label class="block mb-4 text-[#2A2C24] font-bold">1. What is your marital status?</label>
                     <div class="flex flex-col">
                         <label class="inline-flex items-center mb-2">
@@ -28,7 +28,7 @@
                 </div>
 
                 <!-- Number of Dependents -->
-                <div class="mb-6">
+                <div class="bg-[#c7c1c2] rounded-xl px-2 my-3">
                     <label class="block mb-4 text-[#2A2C24] font-bold">2. How many dependents do you have?</label>
                     <div class="flex flex-col">
                         <label class="inline-flex items-center mb-2">
@@ -51,7 +51,7 @@
                 </div>
 
                 <!-- Employment Status -->
-                <div class="mb-6">
+                <div class="bg-[#c7c1c2] rounded-xl px-2 my-3">
                     <label class="block mb-4 text-[#2A2C24] font-bold">3. What is your current employment status?</label>
                     <div class="flex flex-col">
                         <label class="inline-flex items-center mb-2">
@@ -74,7 +74,7 @@
                 </div>
 
                 <!-- Income Level -->
-                <div class="mb-6">
+                <div class="bg-[#c7c1c2] rounded-xl px-2 my-3">
                     <label class="block mb-4 text-[#2A2C24] font-bold">4. What is your estimated annual income?</label>
                     <div class="flex flex-col">
                         <label class="inline-flex items-center mb-2">
@@ -95,9 +95,8 @@
                         </label>
                     </div>
                 </div>
-
                 <!-- Submit Button -->
-                <div class="mt-6">
+                <div class="mt-6 flex justify-center">
                     <button class="bg-[#575A4B] text-[#CFCFEA] hover:bg-[#816C61] hover:text-[#2A2C24] font-bold py-2 px-4 rounded" type="submit" hx-get="/tax" hx-target="#mainDiv">Submit Information</button>
                 </div>
             </form>

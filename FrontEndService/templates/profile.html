@@ -1,0 +1,34 @@
+<div id="mainDiv" class="container mx-auto py-8 px-4">
+    <h2 class="text-2xl font-bold mb-6">User Profile</h2>
+    <div class="bg-[#2a2c24] p-6 rounded-lg shadow-md">
+        <div class="mb-4">
+            <label class="block text-[#cfcfea] text-sm font-bold mb-2">Name</label>
+            <p class="text-[#cfcfea]">{{.Name}}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-[#cfcfea] text-sm font-bold mb-2">Email</label>
+            <p class="text-[#cfcfea]">{{.Email}}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-[#cfcfea] text-sm font-bold mb-2">Phone</label>
+            <p class="text-[#cfcfea]">{{.Phone}}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-[#cfcfea] text-sm font-bold mb-2">Address</label>
+            <p class="text-[#cfcfea]">{{.Address}}, {{.City}}, {{.State}}, {{.Zip}}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-[#cfcfea] text-sm font-bold mb-2">Account Created</label>
+            <p class="text-[#cfcfea]">{{.CreatedAt.Format "Jan 2, 2006"}}</p>
+        </div>
+        <div class="mb-4">
+            <label class="block text-[#cfcfea] text-sm font-bold mb-2">Last Updated</label>
+            <p class="text-[#cfcfea]">{{.UpdatedAt.Format "Jan 2, 2006"}}</p>
+        </div>
+        <div class="mt-6 text-right">
+            <button hx-get="/editProfile" hx-target="#mainDiv" class="bg-[#cfcfea] text-[#2a2c24] font-bold py-2 px-4 rounded">
+                Edit Info
+            </button>
+        </div>
+    </div>
+</div>
