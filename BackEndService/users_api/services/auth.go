@@ -1,10 +1,10 @@
 package services
 
 import (
+	"github.com/golang-jwt/jwt/v4"
+	bcrypt "golang.org/x/crypto/bcrypt"
 	"os"
 	"time"
-
-	"github.com/golang-jwt/jwt/v4"
 )
 
 type claims struct {
@@ -29,4 +29,13 @@ func GenerateJWTToken(id string, role string) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
+}
+
+func HashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(hashedPassword), err
+}
+
+func ComparePasswords(hashedPassword string, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
