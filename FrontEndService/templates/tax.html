@@ -1,10 +1,17 @@
-
 <div id="mainDiv" class="bg-[#A89B9D] rounded-xl container mx-auto mt-8 items-center w-fit">
     <div class="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
-        <form  class="w-full max-w-lg">
-            <label class="block mb-2 text-[#2A2C24] font-bold" for="file-upload">Upload your files</label>
-            <input class="block w-full text-[#575A4B] font-bold px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#A89B9D]" type="file" id="file-upload" name="files" multiple>
-            <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded mt-4" type="submit" action="/upload" method="POST" hx-encoding="multipart/form-data">Submit Files</button>
+        <form id="fileForm" class="w-full max-w-lg" hx-encoding="multipart/form-data">
+            <input type='files' name='file'>
+            <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded mt-4" type="submit" hx-include="#fileForm" hx-post="/tax/upload" hx-target="#successMessage">Submit Files</button>
+            <progress id='progress' value='0' max='100'></progress>
         </form>
+        <div id="successMessage" class="mb-4"></div>
+        <script>
+            htmx.on('#fileForm', 'htmx:xhr:progress', function(evt) {
+                if(evt.detail.total > 0) {
+                htmx.find('#progress').setAttribute('value', evt.detail.loaded / evt.detail.total * 100)
+                }
+            });
+        </script>
     </div>
 </div>
