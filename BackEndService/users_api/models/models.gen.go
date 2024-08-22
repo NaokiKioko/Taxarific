@@ -16,16 +16,8 @@ type Admin struct {
 	Email     openapi_types.Email `json:"email"`
 	Id        primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
 	Name      string              `json:"name"`
+	Password  string              `json:"omitempty"`
 	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
-}
-
-// AdminResponseBody defines model for AdminResponseBody.
-type AdminResponseBody struct {
-	CreatedAt *time.Time           `json:"created_at,omitempty"`
-	Email     *openapi_types.Email `json:"email,omitempty"`
-	Id        *primitive.ObjectID  `bson:"_id,omitempty" json:"id,omitempty"`
-	Name      *string              `json:"name,omitempty"`
-	UpdatedAt *time.Time           `json:"updated_at,omitempty"`
 }
 
 // Case defines model for Case.
@@ -45,17 +37,8 @@ type Employee struct {
 	Email     openapi_types.Email `json:"email"`
 	Id        primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
 	Name      string              `json:"name"`
+	Password  string              `json:"omitempty"`
 	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
-}
-
-// EmployeeResponseBody defines model for EmployeeResponseBody.
-type EmployeeResponseBody struct {
-	Cases     *[]Case              `json:"cases,omitempty"`
-	CreatedAt *time.Time           `json:"created_at,omitempty"`
-	Email     *openapi_types.Email `json:"email,omitempty"`
-	Id        *primitive.ObjectID  `bson:"_id,omitempty" json:"id,omitempty"`
-	Name      *string              `json:"name,omitempty"`
-	UpdatedAt *time.Time           `json:"updated_at,omitempty"`
 }
 
 // User defines model for User.
@@ -66,25 +49,11 @@ type User struct {
 	Email     openapi_types.Email `json:"email"`
 	Id        primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
 	Name      string              `json:"name"`
-	Password  string              `json:"password"`
+	Password  string              `json:"omitempty"`
 	Phone     *string             `json:"phone,omitempty"`
 	State     *string             `json:"state,omitempty"`
 	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
 	Zip       *string             `json:"zip,omitempty"`
-}
-
-// UserResponseBody defines model for UserResponseBody.
-type UserResponseBody struct {
-	Address   *string              `json:"address,omitempty"`
-	City      *string              `json:"city,omitempty"`
-	CreatedAt *time.Time           `json:"created_at,omitempty"`
-	Email     *openapi_types.Email `json:"email,omitempty"`
-	Id        *primitive.ObjectID  `bson:"_id,omitempty" json:"id,omitempty"`
-	Name      *string              `json:"name,omitempty"`
-	Phone     *string              `json:"phone,omitempty"`
-	State     *string              `json:"state,omitempty"`
-	UpdatedAt *time.Time           `json:"updated_at,omitempty"`
-	Zip       *string              `json:"zip,omitempty"`
 }
 
 // PostAdminJSONRequestBody defines body for PostAdmin for application/json ContentType.
