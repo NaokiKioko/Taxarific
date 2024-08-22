@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Taxarific Users API
+  title: Taxarific Tax API
   version: 1.0.0
 servers:
   - url: Localhost:8080
@@ -28,7 +28,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/UserResponseBody"
     post:
       tags:
         - users
@@ -46,7 +46,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserResponseBody"
   /user/{userid}:
     put:
       tags:
@@ -72,7 +72,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/UserResponseBody"
         "404":
           description: User not found.
   /employee:
@@ -89,7 +89,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Employee"
+                  $ref: "#/components/schemas/EmployeeResponseBody"
   /employee/{employeeid}:
     put:
       tags:
@@ -115,7 +115,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Employee"
+                  $ref: "#/components/schemas/EmployeeResponseBody"
         "404":
           description: Employee not found.
   /admin:
@@ -132,7 +132,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/UserResponseBody"
     post:
       tags:
         - admin
@@ -150,7 +150,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Admin"
+                $ref: "#/components/schemas/AdminResponseBody"
   /admin/employee:
     post:
       tags:
@@ -169,7 +169,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Employee"
+                $ref: "#/components/schemas/EmployeeResponseBody"
 components:
   schemas:
     User:
@@ -194,8 +194,6 @@ components:
           format: email
         password:
           type: string
-          x-oapi-codegen-extra-tags:
-            json: omitempty
         phone:
           type: string
           format: phone
@@ -227,8 +225,6 @@ components:
           format: email
         password:
           type: string
-          x-oapi-codegen-extra-tags:
-            json: omitempty
         phone:
           type: string
           format: phone
@@ -240,6 +236,38 @@ components:
           type: string
         zip:
           type: string
+    UserResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+          x-go-type: primitive.ObjectID
+          x-go-type-import:
+            path: go.mongodb.org/mongo-driver/bson/primitive
+          x-oapi-codegen-extra-tags:
+            bson: _id,omitempty
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          format: phone
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     Employee:
       type: object
       required:
@@ -260,10 +288,32 @@ components:
         email:
           type: string
           format: email
-        password:
+        cases:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Case"
+        created_at:
           type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    EmployeeResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+          x-go-type: primitive.ObjectID
+          x-go-type-import:
+            path: go.mongodb.org/mongo-driver/bson/primitive
           x-oapi-codegen-extra-tags:
-            json: omitempty
+            bson: _id,omitempty
+        name:
+          type: string
+        email:
+          type: string
+          format: email
         cases:
           type: array
           items:
@@ -316,10 +366,27 @@ components:
         email:
           type: string
           format: email
-        password:
+        created_at:
           type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    AdminResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+          x-go-type: primitive.ObjectID
+          x-go-type-import:
+            path: go.mongodb.org/mongo-driver/bson/primitive
           x-oapi-codegen-extra-tags:
-            json: omitempty
+            bson: _id,omitempty
+        name:
+          type: string
+        email:
+          type: string
+          format: email
         created_at:
           type: string
           format: date-time
