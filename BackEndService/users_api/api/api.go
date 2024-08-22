@@ -38,6 +38,7 @@ func (a *API) GetUser(c *gin.Context) {
 		return
 	}
 	c.JSON(200, users)
+
 }
 
 // PostUser implements ServerInterface.
@@ -93,7 +94,6 @@ func (a *API) PostAdmin(c *gin.Context) {
 
 // PostAdminEmployee implements ServerInterface.
 func (a *API) PostAdminEmployee(c *gin.Context) {
-
 }
 
 func NewAPI() *API {
