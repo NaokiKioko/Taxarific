@@ -49,7 +49,7 @@ func ValidateJWTToken(jwtToken string) (err error) {
 		err = errors.New("invalid token")
 		return
 	}
-	if claims.ExpiresAt < time.Now().Local().Unix() {
+	if claims.ExpiresAt.Before(time.Now().Local()) {
 		err = errors.New("token expired")
 		return
 	}
