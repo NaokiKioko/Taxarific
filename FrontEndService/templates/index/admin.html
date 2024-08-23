@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+<script type="text/javascript" src="https://cdn.tailwindcss.com"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://unpkg.com/htmx.org@1.7.0"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/json-enc.js"></script>
+        <title>TaxarificHomePage</title>
+    </head>
+
+    <body class="bg-[#816C61] flex flex-col h-screen justify-between">
+        <header class="bg-[#2a2c24] text-[#cfcfea]">
+            <div id="headerdiv" class="container mx-auto ">
+                <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+                    <a hx-get="/start" hx-target="#mainDiv" class="mx-2 font-bold">Taxarific</a>
+                    <div id="AcssesableActionsDiv" hx-get="/role/nav" hx-trigger="load">
+                        <a class="mx-2" hx-get="/user" hx-target="#mainDiv">View Users</a>
+                        <a class="mx-2" hx-get="/employee" hx-target="#mainDiv">View Emplotees</a>
+                        <a class="mx-2" hx-post="/employee" hx-target="#mainDiv">Create Emplotee Account</a>
+                    </div>
+                    <div id="loginDiv" hx-get="/login/nav" hx-trigger="load" hx-target="#loginDiv">
+                        <a hx-get="/login" hx-target="#mainDiv" class="mx-2">Login</a>
+                        <a class="mx-2"> / </a>
+                        <a hx-get="/signup" hx-target="#mainDiv" class="mx-2">Sign Up</a>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main id="mainContent">
+            <div id="mainDiv" hx-get="/start" hx-trigger="load">
+            </div>
+        </main>
+
+        <footer class="bg-[#2a2c24] text-[#cfcfea]">
+            <div class="container mx-auto mt-8">
+                <p class="text-center">2024 Taxarific . No rights reserved.</p>
+            </div>
+    </body>
+</html> 
