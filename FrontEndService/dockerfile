@@ -3,7 +3,7 @@
 FROM golang:latest
 
 # Set destination for COP
-WORKDIR /frontend-api
+WORKDIR /frontend
 
 # Download Go modules
 # COPY go.mod go.sum ./
