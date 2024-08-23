@@ -3,63 +3,67 @@ package main
 import (
 	"html/template"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	router := gin.Default()
 
-	http.HandleFunc("/", handleIndex)
-	http.HandleFunc("/tax", handleTax)
-	http.HandleFunc("/start", handleStart)
-	http.HandleFunc("/quiz", handleQuiz)
-	http.HandleFunc("/login", handleLogin)
-	http.HandleFunc("/signup", handleSignup)
-	http.HandleFunc("/profilenav", handleProfileNav)
+	// Serve static files
+	router.Static("/static", "./static")
 
+	// Define routes
+	router.GET("/", handleIndex)
+	router.GET("/tax", handleTax)
+	router.GET("/start", handleStart)
+	router.GET("/quiz", handleQuiz)
+	router.GET("/login", handleLogin)
+	router.GET("/signup", handleSignup)
+	router.GET("/profilenav", handleProfileNav)
 
-	http.ListenAndServe(":3000", nil)
+	// Start server
+	router.Run(":3000")
 	print("Server started on port 3000")
 }
 
-func handleIndex(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "index.html", nil)
+func handleIndex(c *gin.Context) {
+	renderTemplate(c, "index/guest.html", nil)
 }
 
-func handleTax(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "tax.html", nil)
+func handleTax(c *gin.Context) {
+	renderTemplate(c, "tax.html", nil)
 }
 
-func handleStart(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "start.html", nil)
+func handleStart(c *gin.Context) {
+	renderTemplate(c, "start.html", nil)
 }
 
-func handleQuiz(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "quiz.html", nil)
+func handleQuiz(c *gin.Context) {
+	renderTemplate(c, "quiz.html", nil)
 }
 
-func handleLogin(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "login.html", nil)
+func handleLogin(c *gin.Context) {
+	renderTemplate(c, "login/login.html", nil)
 }
 
-func handleSignup(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "signup.html", nil)
+func handleSignup(c *gin.Context) {
+	renderTemplate(c, "login/signup.html", nil)
 }
 
-func handleProfileNav(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "profilenav.html", nil)
+func handleProfileNav(c *gin.Context) {
+	renderTemplate(c, "profilenav.html", nil)
 }
 
-
-func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
+func renderTemplate(c *gin.Context, templateName string, data interface{}) {
 	t, err := template.ParseFiles("templates/" + templateName)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	err = t.Execute(w, data)
+	err = t.Execute(c.Writer, data)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, err.Error())
 	}
 }

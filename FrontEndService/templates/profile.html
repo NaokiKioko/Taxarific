@@ -1,0 +1,40 @@
+<div id="mainDiv" class="bg-[#A89B9D] p-6 rounded-lg shadow-md max-w-lg mx-auto">
+    <div class="bg-[#A89B9D] p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-6 flex justify-center">User Profile</h2>
+        <div class="mb-6 flex space-x-4">
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+                <label class="block text-sm font-bold mb-2">Name</label>
+                <p >{{.Name}}</p>
+            </div>
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+                <label class="block text-sm font-bold mb-2">Email</label>
+                <p >{{.Email}}</p>
+            </div>
+        </div>
+        <div class="mb-6 flex space-x-4">
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+                <label class="block text-sm font-bold mb-2">Phone</label>
+                <p >{{.Phone}}</p>
+            </div>
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+                <label class="block text-sm font-bold mb-2">Address</label>
+                <p >{{.Address}}, {{.City}}, {{.State}}, {{.Zip}}</p>
+            </div>
+        </div>
+        <div class="mb-6 flex space-x-4">
+        <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+            <label class="block text-sm font-bold mb-2">Account Created</label>
+            <p >{{.CreatedAt.Format "Jan 2, 2006"}}</p>
+        </div>
+        <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+            <label class="block text-sm font-bold mb-2">Last Updated</label>
+            <p >{{.UpdatedAt.Format "Jan 2, 2006"}}</p>
+        </div>
+        </div>
+        <div class="mt-6 flex justify-center">
+            <button hx-patch="/profile" hx-target="#mainDiv" class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded">
+                Edit Info
+            </button>
+        </div>
+    </div>
+</div>

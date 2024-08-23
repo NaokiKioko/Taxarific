@@ -1,0 +1,4 @@
+[#2a2c24] - Dark
+[#816C61] - Mid
+[#A89B9D] - Light
+[#cfcfea] - Text

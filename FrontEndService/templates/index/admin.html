@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+<script type="text/javascript" src="https://cdn.tailwindcss.com"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://unpkg.com/htmx.org@1.7.0"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/json-enc.js"></script>
+        <title>TaxarificHomePage</title>
+    </head>
+
+    <body class="bg-[#816C61] flex flex-col h-screen justify-between">
+        <header class="bg-[#2a2c24] text-[#cfcfea]">
+            <div id="headerdiv" class="container mx-auto ">
+                <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+                    <a hx-get="/start" hx-target="#mainDiv" class="mx-2 font-bold">Taxarific</a>
+                    <div id="AcssesableActionsDiv" hx-get="/role/nav" hx-trigger="load">
+                        <a class="mx-2" hx-get="/user" hx-target="#mainDiv">View Users</a>
+                        <a class="mx-2" hx-get="/employee" hx-target="#mainDiv">View Emplotees</a>
+                        <a class="mx-2" hx-post="/employee" hx-target="#mainDiv">Create Emplotee Account</a>
+                    </div>
+                    <div id="loginDiv">
+                        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/271deea8-e28c-41a3-aaf5-2913f5f48be6/de7834s-6515bd40-8b2c-4dc6-a843-5ac1a95a8b55.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzI3MWRlZWE4LWUyOGMtNDFhMy1hYWY1LTI5MTNmNWY0OGJlNlwvZGU3ODM0cy02NTE1YmQ0MC04YjJjLTRkYzYtYTg0My01YWMxYTk1YThiNTUuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.BopkDn1ptIwbmcKHdAOlYHyAOOACXW0Zfgbs0-6BY-E" width="500" height="600" class="rounded-full mx-2" hx-get="/profile" hx-target="#mainDiv">
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main id="mainContent">
+            <div id="mainDiv" hx-get="/start" hx-trigger="load">
+            </div>
+        </main>
+
+        <footer class="bg-[#2a2c24] text-[#cfcfea]">
+            <div class="container mx-auto mt-8">
+                <p class="text-center">2024 Taxarific . No rights reserved.</p>
+            </div>
+    </body>
+</html> 
