@@ -50,3 +50,55 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.target === document.getElementById('mainDiv')) {
+            handleAuthResponse(evt, 'Signup');
+        }
+    });
+
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function handleAuthResponse(evt, action) {
+        var mainDiv = document.getElementById('mainDiv');
+        if (evt.detail.xhr.status >= 200 && evt.detail.xhr.status < 300) {
+            var responseText = evt.detail.xhr.responseText;
+            var response = JSON.parse(responseText);
+            var token = response.token;
+            if (!token) {
+                mainDiv.textContent = 'Signup failed. Redirecting to login...';
+                mainDiv.classList.remove('text-green-500');
+                mainDiv.classList.add('text-red-500');
+                setTimeout(function() {
+                    htmx.ajax('GET', '/login', {target: '#mainDiv'});
+                }, 1000);
+                return;
+            }
+            
+            setCookie('jwt', token, 7);
+
+            mainDiv.textContent = action + ' successful. Redirecting...';
+            mainDiv.classList.remove('text-red-500');
+            mainDiv.classList.add('text-green-500');
+            setTimeout(function() {
+                window.location.href = '/';
+            }, 1000);
+        } else {
+            mainDiv.textContent = 'Error: ' + evt.detail.xhr.responseText + '. Redirecting to login...';
+            mainDiv.classList.remove('text-green-500');
+            mainDiv.classList.add('text-red-500');
+            setTimeout(function() {
+                htmx.ajax('GET', '/login', {target: '#mainDiv'});
+            }, 1000);
+        }
+    }
+</script>
