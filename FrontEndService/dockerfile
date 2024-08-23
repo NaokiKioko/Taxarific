@@ -3,11 +3,10 @@
 FROM golang:latest
 
 # Set destination for COP
-WORKDIR /frontend-api
+WORKDIR /api
 
 # Download Go modules
-# COPY go.mod go.sum ./
-COPY go.mod ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy code
@@ -16,7 +15,7 @@ COPY . .
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /frontend-api
 
-EXPOSE 8080
+EXPOSE 3000
 
 # Run
 CMD [ "/frontend-api" ]

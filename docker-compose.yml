@@ -13,13 +13,13 @@ services:
   #   restart: on-failure
   #   networks:
   #     - taxarific
-  # frontend-service:
-  #   build: ./FrontEndService
-  #   ports:
-  #     - "3000"
-  #   restart: on-failure
-  #   networks:
-  #     - taxarific
+  frontend-service:
+    build: ./FrontEndService
+    ports:
+      - "3000:3000"
+    restart: on-failure
+    networks:
+      - taxarific
 networks:
   taxarific:
     driver: bridge

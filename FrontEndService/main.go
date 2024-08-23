@@ -10,9 +10,6 @@ import (
 func main() {
 	router := gin.Default()
 
-	// Serve static files
-	router.Static("/static", "./static")
-
 	// Define routes
 	router.GET("/", handleIndex)
 	router.GET("/tax", handleTax)
