@@ -1,4 +1,3 @@
-version: "3"
 services:
   backend-users-api:
     build: ./BackEndService/users_api
@@ -7,20 +6,20 @@ services:
     restart: on-failure
     networks:
       - taxarific
-  backend-tax-api:
-    build: ./BackEndService/tax_api
-    ports:
-      - "8081"
-    restart: on-failure
-    networks:
-      - taxarific
-  backend-employee-api:
-    build: ./BackEndService/employee_api
-    ports:
-      - "8082"
-    restart: on-failure
-    networks:
-      - taxarific
+  # backend-tax-api:
+  #   build: ./BackEndService/tax_api
+  #   ports:
+  #     - "8081"
+  #   restart: on-failure
+  #   networks:
+  #     - taxarific
+  # backend-employee-api:
+  #   build: ./BackEndService/employee_api
+  #   ports:
+  #     - "8082"
+  #   restart: on-failure
+  #   networks:
+  #     - taxarific
   frontend-service:
     build: ./FrontEndService
     ports:
