@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"os"
 	"taxarific_users_api/models"
 	"time"
 
@@ -17,7 +16,7 @@ var client *mongo.Client
 func NewDB() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	uri := "mongodb+srv://" + os.Getenv("MONGO_USER") + ":" + os.Getenv("MONGO_PASS") + "@taxarific.wxqpl.mongodb.net/"
+	uri := "mongodb+srv://api_user:pG45kViSAuLnKhm2@taxarific.wxqpl.mongodb.net/"
 	var err error
 	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
