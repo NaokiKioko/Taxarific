@@ -2,7 +2,7 @@ services:
   backend-users-api:
     build: ./BackEndService/users_api
     ports:
-      - "8080"
+      - "8080:8080"
     restart: on-failure
     networks:
       - taxarific
@@ -13,22 +13,13 @@ services:
   #   restart: on-failure
   #   networks:
   #     - taxarific
-  # backend-employee-api:
-  #   build: ./BackEndService/employee_api
+  # frontend-service:
+  #   build: ./FrontEndService
   #   ports:
-  #     - "8082"
+  #     - "3000"
   #   restart: on-failure
   #   networks:
   #     - taxarific
-  frontend-service:
-    build: ./FrontEndService
-    ports:
-      - "3000"
-    restart: on-failure
-    networks:
-      - taxarific
-volumes:
-  db_data: {}
 networks:
   taxarific:
     driver: bridge
