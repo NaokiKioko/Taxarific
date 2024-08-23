@@ -1,11 +1,13 @@
 package services
 
 import (
-	// "errors"
+	"errors"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	bcrypt "golang.org/x/crypto/bcrypt"
+	"github.com/joho/godotenv"
 )
 
 type claims struct {
@@ -24,7 +26,11 @@ func GenerateJWTToken(id string, role string) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	secret := "5!|LjlIV2~WO5xw%rW>?DG8d^4q&96St>3f80b!5UE_D"
+	err := godotenv.Load(".env")
+	if err != nil {
+		return "", err
+	}
+	secret := os.Getenv("JWT_SECRET_KEY")
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return "", err
@@ -32,28 +38,28 @@ func GenerateJWTToken(id string, role string) (string, error) {
 	return tokenString, nil
 }
 
-// func ValidateJWTToken(jwtToken string) (err error) {
-// 	token, err := jwt.ParseWithClaims(
-// 		jwtToken,
-// 		&claims{},
-// 		func(token *jwt.Token) (interface{}, error) {
-// 			return []byte(os.Getenv("JWT_SECRET_KEY")), nil
-// 		},
-// 	)
-// 	if err != nil {
-// 		return
-// 	}
-// 	claims, valid := token.Claims.(*claims)
-// 	if !valid {
-// 		err = errors.New("invalid token")
-// 		return
-// 	}
-// 	if claims.ExpiresAt < time.Now().Unix() {
-// 		err = errors.New("token expired")
-// 		return
-// 	}
-// 	return
-// }
+func ValidateJWTToken(jwtToken string) (err error) {
+	token, err := jwt.ParseWithClaims(
+		jwtToken,
+		&claims{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+		},
+	)
+	if err != nil {
+		return
+	}
+	claims, valid := token.Claims.(*claims)
+	if !valid {
+		err = errors.New("invalid token")
+		return
+	}
+	if claims.ExpiresAt.Unix() < time.Now().Unix() {
+		err = errors.New("token expired")
+		return
+	}
+	return
+}
 
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
