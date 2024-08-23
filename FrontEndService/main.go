@@ -10,9 +10,6 @@ import (
 func main() {
 	router := gin.Default()
 
-	// Serve static files
-	router.Static("/static", "./static")
-
 	// Define routes
 	router.GET("/", handleIndex)
 	router.GET("/tax", handleTax)
@@ -23,7 +20,7 @@ func main() {
 	router.GET("/profilenav", handleProfileNav)
 
 	// Start server
-	router.Run(":3000")
+	router.Run("127.0.0.1:3000")
 	print("Server started on port 3000")
 }
 
