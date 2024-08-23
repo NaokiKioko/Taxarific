@@ -3,6 +3,7 @@ package main
 import (
 	"taxarific_users_api/api"
 	"taxarific_users_api/data"
+
 	"github.com/gin-gonic/gin"
 	middleware "github.com/oapi-codegen/gin-middleware"
 )

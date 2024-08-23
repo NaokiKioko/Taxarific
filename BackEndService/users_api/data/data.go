@@ -2,9 +2,11 @@ package data
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"taxarific_users_api/models"
-	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,14 +16,31 @@ import (
 var client *mongo.Client
 
 func NewDB() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	uri := "mongodb+srv://api_user:pG45kViSAuLnKhm2@taxarific.wxqpl.mongodb.net/"
-	var err error
-	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// defer cancel()
+	err := godotenv.Load(".env")
 	if err != nil {
 		return err
 	}
+	fmt.Println("Connecting to MongoDB at", os.Getenv("MONGO_CON_URI"))
+	// client, err = mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_CON_URI")))
+	// if err != nil {
+	// 	return err
+	// }
+	// return nil
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	// Correctly retrieve the URI from the environment variable
+	uri := os.Getenv("MONGO_CON_URI")
+	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
+	client, err = mongo.Connect(context.TODO(), opts)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err = client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
 	return nil
 }
 
