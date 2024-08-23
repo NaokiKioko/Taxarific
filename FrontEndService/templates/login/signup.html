@@ -1,40 +1,49 @@
 <div id="mainDiv" class="container mx-auto py-8 px-4">
-    <h2 class="text-2xl font-bold mb-6">User Profile</h2>
-    <div class="bg-[#A89B9D] p-6 rounded-lg shadow-md">
-        <div class="mb-6 flex space-x-4">
-            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
-                <label class="block text-sm font-bold mb-2">Name</label>
-                <p >{{.Name}}</p>
+    <div class="bg-[#A89B9D] p-6 rounded-lg shadow-md max-w-lg mx-auto">
+        <h2 class="text-2xl font-bold mb-6 flex justify-center">User Profile</h2>
+        <form id="signupForm">
+            <div class="mb-6 flex space-x-4">
+                <div class="w-1/2">
+                    <label class="block text-sm font-bold mb-2">Name</label>
+                    <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" name="name" type="text" value="{{.Name}}">
+                </div>
+                <div class="w-1/2">
+                    <label class="block text-sm font-bold mb-2">Email</label>
+                    <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" name="email" type="email" value="{{.Email}}">
+                </div>
             </div>
-            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
-                <label class="block text-sm font-bold mb-2">Email</label>
-                <p >{{.Email}}</p>
+            <div class="mb-6 flex space-x-4">
+                <div class="w-1/2">
+                    <label class="block text-sm font-bold mb-2">Phone</label>
+                    <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" name="phone" type="text" value="{{.Phone}}">
+                </div>
+                <div class="w-1/2">
+                    <label class="block text-sm font-bold mb-2">Address</label>
+                    <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" name="address" type="text" value="{{.Address}}">
+                </div>
             </div>
-        </div>
-        <div class="mb-6 flex space-x-4">
-            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
-                <label class="block text-sm font-bold mb-2">Phone</label>
-                <p >{{.Phone}}</p>
+            <div class="mb-6 flex space-x-4">
+                <div class="w-1/2">
+                    <label class="block text-sm font-bold mb-2">City</label>
+                    <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" name="city" type="text" value="{{.City}}">
+                </div>
+                <div class="w-1/2">
+                    <label class="block text-sm font-bold mb-2">State</label>
+                    <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" name="state" type="text" value="{{.State}}">
+                </div>
             </div>
-            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
-                <label class="block text-sm font-bold mb-2">Address</label>
-                <p >{{.Address}}, {{.City}}, {{.State}}, {{.Zip}}</p>
+            <div class="mb-6 flex space-x-4">
+                <div class="w-1/2">
+                    <label class="block text-sm font-bold mb-2">Zip</label>
+                    <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" name="zip" type="text" value="{{.Zip}}">
+                </div>
+                <div class="w-1/2"></div>
             </div>
-        </div>
-        <div class="mb-6 flex space-x-4">
-        <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
-            <label class="block text-sm font-bold mb-2">Account Created</label>
-            <p >{{.CreatedAt.Format "Jan 2, 2006"}}</p>
-        </div>
-        <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
-            <label class="block text-sm font-bold mb-2">Last Updated</label>
-            <p >{{.UpdatedAt.Format "Jan 2, 2006"}}</p>
-        </div>
-        </div>
-        <div class="mt-6 flex justify-center">
-            <button hx-patch="/profile" hx-target="#mainDiv" class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded">
-                Edit Info
-            </button>
-        </div>
+            <div class="mt-6 flex justify-center">
+                <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" type="submit" hx-post="/user" hx-include="#signupForm" hx-target="#mainDiv">
+                    Sign up
+                </button>
+            </div>
+        </form>
     </div>
 </div>
