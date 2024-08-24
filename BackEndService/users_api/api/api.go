@@ -110,7 +110,7 @@ func (a *API) PostLogin(c *gin.Context) {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
 		}
-		err = auth.CheckPassword(user.Password, login.Password)
+		err = auth.CheckPassword(*user.Password, login.Password)
 		if err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
@@ -129,7 +129,7 @@ func (a *API) PostLogin(c *gin.Context) {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
 		}
-		err = auth.CheckPassword(admin.Password, login.Password)
+		err = auth.CheckPassword(*admin.Password, login.Password)
 		if err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
@@ -148,7 +148,7 @@ func (a *API) PostLogin(c *gin.Context) {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
 		}
-		err = auth.CheckPassword(employee.Password, login.Password)
+		err = auth.CheckPassword(*employee.Password, login.Password)
 		if err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return

@@ -11,9 +11,9 @@ import (
 // Admin defines model for Admin.
 type Admin struct {
 	Email    openapi_types.Email `json:"email"`
-	Id       primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
+	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
-	Password string              `json:"omitempty"`
+	Password *string             `json:"omitempty"`
 }
 
 // Case defines model for Case.
@@ -28,18 +28,18 @@ type Case struct {
 type Employee struct {
 	Cases    *[]Case             `json:"cases,omitempty"`
 	Email    openapi_types.Email `json:"email"`
-	Id       primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
+	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
-	Password string              `json:"omitempty"`
+	Password *string             `json:"omitempty"`
 }
 
 // User defines model for User.
 type User struct {
 	Case     *Case               `json:"case,omitempty"`
 	Email    openapi_types.Email `json:"email"`
-	Id       primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
+	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
-	Password string              `json:"omitempty"`
+	Password *string             `json:"omitempty"`
 }
 
 // PostAdminJSONBody defines parameters for PostAdmin.

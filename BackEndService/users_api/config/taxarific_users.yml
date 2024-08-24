@@ -258,7 +258,6 @@ components:
         - id
         - name
         - email
-        - password
       properties:
         id:
           type: string
@@ -266,7 +265,7 @@ components:
           x-go-type-import:
             path: go.mongodb.org/mongo-driver/bson/primitive
           x-oapi-codegen-extra-tags:
-            bson: _id,omitempty
+            bson: _id, omitempty
         name:
           type: string
         email:
@@ -285,7 +284,6 @@ components:
         - id
         - name
         - email
-        - password
       properties:
         id:
           type: string
@@ -293,7 +291,7 @@ components:
           x-go-type-import:
             path: go.mongodb.org/mongo-driver/bson/primitive
           x-oapi-codegen-extra-tags:
-            bson: _id,omitempty
+            bson: _id, omitempty
         name:
           type: string
         email:
@@ -329,7 +327,6 @@ components:
         - id
         - name
         - email
-        - password
       properties:
         id:
           type: string
@@ -337,7 +334,7 @@ components:
           x-go-type-import:
             path: go.mongodb.org/mongo-driver/bson/primitive
           x-oapi-codegen-extra-tags:
-            bson: _id,omitempty
+            bson: _id, omitempty
         name:
           type: string
         email:
