@@ -20,19 +20,6 @@ services:
     restart: on-failure
     networks:
       - taxarific
-  # temp local db:
-  database:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - db_data:/data/db
-    restart: on-failure
-    networks:
-      - taxarific
-volumes:
-  db_data:
-    driver: local
 networks:
   taxarific:
     driver: bridge
