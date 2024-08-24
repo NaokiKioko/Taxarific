@@ -30,6 +30,9 @@ services:
     restart: on-failure
     networks:
       - taxarific
+volumes:
+  db_data:
+    driver: local
 networks:
   taxarific:
     driver: bridge
