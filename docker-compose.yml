@@ -31,7 +31,8 @@ services:
     networks:
       - taxarific
 volumes:
-  db_data: {}
+  db_data:
+    driver: local
 networks:
   taxarific:
     driver: bridge
