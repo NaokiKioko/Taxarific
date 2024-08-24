@@ -1,6 +1,7 @@
 package api
 
 import (
+	"taxarific_users_api/auth"
 	"taxarific_users_api/data"
 	"taxarific_users_api/models"
 
@@ -41,62 +42,149 @@ func (a *API) GetUser(c *gin.Context) {
 
 // PostAdmin implements ServerInterface.
 func (a *API) PostAdmin(c *gin.Context) {
-	panic("unimplemented")
+	var err error
+	// !! TEST FIRST
+	// claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	// if err != nil {
+	// 	c.JSON(401, gin.H{"error": err.Error()})
+	// 	return
+	// }
+	// if claim.Role != "admin" {
+	// 	c.JSON(401, gin.H{"error": "unauthorized"})
+	// 	return
+	// }
+	var admin models.PostAdminJSONRequestBody
+	if err := c.BindJSON(&admin); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	admin.Password, err = auth.HashPassword(admin.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	err = data.CreateAdmin(&admin)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 }
 
 // PostAdminEmployee implements ServerInterface.
 func (a *API) PostAdminEmployee(c *gin.Context) {
-	panic("unimplemented")
+	var err error
+	// !! Add auth
+	var employee models.PostAdminEmployeeJSONRequestBody
+	if err := c.BindJSON(&employee); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	employee.Password, err = auth.HashPassword(employee.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	err = data.CreateEmployee(&employee)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 }
 
 // PostLogin implements ServerInterface.
 func (a *API) PostLogin(c *gin.Context) {
+	var err error
 	var login models.PostLoginJSONRequestBody
 	if err := c.BindJSON(&login); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	login.Password, err = auth.HashPassword(login.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	if *login.Role == "user" {
-		token, err := data.Userlogin(&login)
+		user, err := data.Userlogin(string(login.Email))
 		if err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		err = auth.CheckPassword(user.Password, login.Password)
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		token, err := auth.GenerateJWTToken(user.Id.Hex(), *login.Role)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(200, gin.H{"token": token})
 		return
 	}
 	if *login.Role == "admin" {
-		token, err := data.AdminLogin(&login)
+		admin, err := data.AdminLogin(string(login.Email))
 		if err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		err = auth.CheckPassword(admin.Password, login.Password)
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		token, err := auth.GenerateJWTToken(admin.Id.Hex(), *login.Role)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(200, gin.H{"token": token})
 		return
 	}
 	if *login.Role == "employee" {
-		token, err := data.EmployeeLogin(&login)
+		employee, err := data.EmployeeLogin(string(login.Email))
 		if err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		err = auth.CheckPassword(employee.Password, login.Password)
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		token, err := auth.GenerateJWTToken(employee.Id.Hex(), *login.Role)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(200, gin.H{"token": token})
 		return
 	}
 	c.JSON(400, gin.H{"error": "role is required"})
-	return
 }
 
 // PostUser implements ServerInterface.
 func (a *API) PostUser(c *gin.Context) {
+	var err error
 	var user models.PostUserJSONRequestBody
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	token, err := data.CreateUser(&user)
+	user.Password, err = auth.HashPassword(user.Password)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	id, err := data.CreateUser(&user)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	token, err := auth.GenerateJWTToken(id, "user")
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error})
 		return
 	}
 	c.JSON(201, gin.H{"token": token})

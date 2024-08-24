@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"taxarific_users_api/auth"
 	"taxarific_users_api/models"
+	"time"
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,18 +18,20 @@ import (
 var client *mongo.Client
 
 func NewDB() error {
-	err := godotenv.Load(".env")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var err error
+	err = godotenv.Load(".env")
 	if err != nil {
 		return err
 	}
 	uri := os.Getenv("MONGO_CON_URI")
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return err
 	}
-	defer client.Disconnect(context.TODO())
 	var result bson.M
-	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result); err != nil {
+	if err := client.Database("Taxarific").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result); err != nil {
 		return err
 	}
 	fmt.Println("Successfully connected to Atlas")
@@ -37,63 +39,42 @@ func NewDB() error {
 }
 
 func userCollection() *mongo.Collection {
-	return client.Database("Taxarific").Collection("users")
+	return client.Database("Taxarific").Collection("user")
 }
 
 func employeeCollection() *mongo.Collection {
-	return client.Database("Taxarific").Collection("employees")
+	return client.Database("Taxarific").Collection("employee")
 }
 
 func adminCollection() *mongo.Collection {
-	return client.Database("Taxarific").Collection("admins")
+	return client.Database("Taxarific").Collection("admin")
 }
 
-func Userlogin(login *models.PostLoginJSONRequestBody) (string, error) {
+func Userlogin(email string) (*models.User, error) {
 	var user models.User
-	err := userCollection().FindOne(context.Background(), bson.M{"email": login.Email}).Decode(&user)
+	err := userCollection().FindOne(context.Background(), bson.M{"email": email}).Decode(&user)
 	if err != nil {
-		return "", errors.New("user not found")
+		return nil, errors.New("user not found")
 	}
-	if err := auth.CheckPassword(user.Password, login.Password); err != nil {
-		return "", errors.New("invalid password")
-	}
-	token, err := auth.GenerateJWTToken(user.Id.Hex(), "user")
-	if err != nil {
-		return "", err
-	}
-	return token, nil
+	return &user, nil
 }
 
-func AdminLogin(login *models.PostLoginJSONRequestBody) (string, error) {
+func AdminLogin(email string) (*models.Admin, error) {
 	var admin models.Admin
-	err := adminCollection().FindOne(context.Background(), bson.M{"email": login.Email}).Decode(&admin)
+	err := adminCollection().FindOne(context.Background(), bson.M{"email": email}).Decode(&admin)
 	if err != nil {
-		return "", errors.New("admin not found")
+		return nil, errors.New("admin not found")
 	}
-	if err := auth.CheckPassword(admin.Password, login.Password); err != nil {
-		return "", errors.New("invalid password")
-	}
-	token, err := auth.GenerateJWTToken(admin.Id.Hex(), "admin")
-	if err != nil {
-		return "", err
-	}
-	return token, nil
+	return &admin, nil
 }
 
-func EmployeeLogin(login *models.PostLoginJSONRequestBody) (string, error) {
+func EmployeeLogin(email string) (*models.Employee, error) {
 	var employee models.Employee
-	err := employeeCollection().FindOne(context.Background(), bson.M{"email": login.Email}).Decode(&employee)
+	err := employeeCollection().FindOne(context.Background(), bson.M{"email": email}).Decode(&employee)
 	if err != nil {
-		return "", errors.New("employee not found")
+		return nil, errors.New("employee not found")
 	}
-	if err := auth.CheckPassword(employee.Password, login.Password); err != nil {
-		return "", errors.New("invalid password")
-	}
-	token, err := auth.GenerateJWTToken(employee.Id.Hex(), "employee")
-	if err != nil {
-		return "", err
-	}
-	return token, nil
+	return &employee, nil
 }
 
 // Users
@@ -102,8 +83,7 @@ func CreateUser(user *models.PostUserJSONRequestBody) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	token, err := auth.GenerateJWTToken(insertedId.InsertedID.(primitive.ObjectID).Hex(), "user")
-	return token, nil
+	return insertedId.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
 // func GetUser(id string) (models.User, error) {

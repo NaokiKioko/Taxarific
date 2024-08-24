@@ -1,25 +1,24 @@
-package auth 
+package auth
 
 import (
 	"errors"
 	"os"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	bcrypt "golang.org/x/crypto/bcrypt"
 	"github.com/joho/godotenv"
+	bcrypt "golang.org/x/crypto/bcrypt"
 )
 
 type claims struct {
-	Id   string `json:"username"`
-	Role string `json:"role"`
+	UserId string
+	Role   string
 	jwt.RegisteredClaims
 }
 
 func GenerateJWTToken(id string, role string) (string, error) {
 	claims := &claims{
-		Id:   id,
-		Role: role,
+		UserId:           id,
+		Role:             role,
 		RegisteredClaims: jwt.RegisteredClaims{},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -35,7 +34,7 @@ func GenerateJWTToken(id string, role string) (string, error) {
 	return tokenString, nil
 }
 
-func ValidateJWTToken(jwtToken string) (err error) {
+func ValidateJWTToken(jwtToken string) (*claims, error) {
 	token, err := jwt.ParseWithClaims(
 		jwtToken,
 		&claims{},
@@ -44,18 +43,14 @@ func ValidateJWTToken(jwtToken string) (err error) {
 		},
 	)
 	if err != nil {
-		return
+		return nil, err
 	}
 	claims, valid := token.Claims.(*claims)
 	if !valid {
 		err = errors.New("invalid token")
-		return
+		return nil, err
 	}
-	if claims.ExpiresAt.Unix() < time.Now().Unix() {
-		err = errors.New("token expired")
-		return
-	}
-	return
+	return claims, nil
 }
 
 func HashPassword(password string) (string, error) {

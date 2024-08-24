@@ -11,13 +11,9 @@ tags:
     description: Admins that have full access.
   - name: employee
     description: Able to take on user cases and fill out the information based on what the user submitted via pictures.
-  - name: metrics
-    description: Contians metrics for prometheus.
 paths:
   /login:
     post:
-      tags:
-        - users
       summary: Login a user, employee, or admin
       description: Login a user that has signed up for taxarific.
       requestBody:
