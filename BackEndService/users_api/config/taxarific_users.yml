@@ -11,9 +11,39 @@ tags:
     description: Admins that have full access.
   - name: employee
     description: Able to take on user cases and fill out the information based on what the user submitted via pictures.
-  - name: metrics
-    description: Contians metrics for prometheus.
 paths:
+  /login:
+    post:
+      summary: Login a user, employee, or admin
+      description: Login a user that has signed up for taxarific.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+                - password
+              properties:
+                role:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "200":
+          description: User logged in successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  token:
+                    type: string
+                    description: JWT token
+        "404":
+          description: User not found.
   /user:
     get:
       tags:
@@ -39,14 +69,30 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
       responses:
         "201":
           description: User created successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                properties:
+                  id:
+                    type: string
+                  token:
+                    type: string
+                    description: JWT token
   /user/{userid}:
     put:
       tags:
@@ -65,14 +111,21 @@ paths:
         content:
           application/json:
             schema:
-                  $ref: "#/components/schemas/User"
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
       responses:
-        "200":
+        "201":
           description: User updated successfully.
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/User"
         "404":
           description: User not found.
   /employee:
@@ -90,16 +143,16 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Employee"
-  /employee/{employeeid}:
+  /employee/addcase/{caseid}:
     put:
       tags:
         - employee
       summary: Allows Employees to update certain information
       description: Update an employee that is able to take on user cases.
       parameters:
-        - name: employeeid
+        - name: caseid
           in: path
-          description: ID of the employee to update.
+          description: ID of case that employee wises to take on.
           required: true
           schema:
             type: string
@@ -108,14 +161,19 @@ paths:
         content:
           application/json:
             schema:
-                  $ref: "#/components/schemas/Employee"
+              required:
+                - case
+              properties:
+                case:
+                  type: object
+                  $ref: "#/components/schemas/Case"
       responses:
         "200":
           description: Employee updated successfully.
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Employee"
+                $ref: "#/components/schemas/Employee"
         "404":
           description: Employee not found.
   /admin:
@@ -143,7 +201,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Admin"
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
       responses:
         "201":
           description: Admin created successfully.
@@ -162,7 +231,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Employee"
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
       responses:
         "201":
           description: Employee created successfully.
@@ -196,50 +276,9 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: omitempty
-        phone:
-          type: string
-          format: phone
-        address:
-          type: string
-        city:
-          type: string
-        state:
-          type: string
-        zip:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-    PostUser:
-      type: object
-      required:
-        - name
-        - email
-        - password
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          x-oapi-codegen-extra-tags:
-            json: omitempty
-        phone:
-          type: string
-          format: phone
-        address:
-          type: string
-        city:
-          type: string
-        state:
-          type: string
-        zip:
-          type: string
+        case:
+          type: object
+          $ref: "#/components/schemas/Case"
     Employee:
       type: object
       required:
@@ -269,12 +308,6 @@ components:
           items:
             type: object
             $ref: "#/components/schemas/Case"
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
     Case:
       type: object
       required:
@@ -290,12 +323,6 @@ components:
           type: string
         case_description:
           type: string
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
     Admin:
       type: object
       required:
@@ -320,9 +347,3 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: omitempty
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time

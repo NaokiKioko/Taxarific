@@ -1,9 +1,9 @@
 package api
 
 import (
+	"taxarific_users_api/auth"
 	"taxarific_users_api/data"
 	"taxarific_users_api/models"
-	"taxarific_users_api/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +12,7 @@ type API struct{}
 
 // GetAdmin implements ServerInterface.
 func (a *API) GetAdmin(c *gin.Context) {
-	admins, err := services.GetAdmins()
+	admins, err := data.GetAdmins()
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -22,7 +22,7 @@ func (a *API) GetAdmin(c *gin.Context) {
 
 // GetEmployee implements ServerInterface.
 func (a *API) GetEmployee(c *gin.Context) {
-	employees, err := services.GetEmployees()
+	employees, err := data.GetEmployees()
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -32,68 +32,172 @@ func (a *API) GetEmployee(c *gin.Context) {
 
 // GetUser implements ServerInterface.
 func (a *API) GetUser(c *gin.Context) {
-	users, err := services.GetUsers()
+	users, err := data.GetUsers()
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, users)
-
 }
 
-// PostUser implements ServerInterface.
-func (a *API) PostUser(c *gin.Context) {
-	user := models.User{}
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-}
-
-// PutEmployeeEmployeeid implements ServerInterface.
-func (a *API) PutEmployeeEmployeeid(c *gin.Context, employeeid string) {
-	user, err := services.GetEmployee(employeeid)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(200, user)
-}
-
-// PutUserUserid implements ServerInterface.
-func (a *API) PutUserUserid(c *gin.Context, userid string) {
-	user := models.User{}
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-	services.PutUser(userid, user)
-	c.JSON(200, gin.H{"status": "success"})
-}
-
-// !! ADMIN ONLY ENDPOINTS MUST BE LOGGED IN !!
 // PostAdmin implements ServerInterface.
 func (a *API) PostAdmin(c *gin.Context) {
-	var adminRequest models.PostAdminJSONRequestBody
-	if err := c.ShouldBindJSON(&adminRequest); err != nil {
+	var err error
+	// !! TEST FIRST
+	// claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	// if err != nil {
+	// 	c.JSON(401, gin.H{"error": err.Error()})
+	// 	return
+	// }
+	// if claim.Role != "admin" {
+	// 	c.JSON(401, gin.H{"error": "unauthorized"})
+	// 	return
+	// }
+	var admin models.PostAdminJSONRequestBody
+	if err := c.BindJSON(&admin); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	// if adminRequest.Name == "" || adminRequest.Email == "" || adminRequest.Password == "" {
-	// ! Fix return status code to according to the error
-	// c.JSON(400, gin.H{"error": "Name, Email, and Password are required"})
-	// return
-	// }
-	result, err := data.CreateAdmin(adminRequest)
+	admin.Password, err = auth.HashPassword(admin.Password)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"id": result})
+	err = data.CreateAdmin(&admin)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 }
 
 // PostAdminEmployee implements ServerInterface.
 func (a *API) PostAdminEmployee(c *gin.Context) {
+	var err error
+	// !! Add auth
+	var employee models.PostAdminEmployeeJSONRequestBody
+	if err := c.BindJSON(&employee); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	employee.Password, err = auth.HashPassword(employee.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	err = data.CreateEmployee(&employee)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+}
+
+// PostLogin implements ServerInterface.
+func (a *API) PostLogin(c *gin.Context) {
+	var err error
+	var login models.PostLoginJSONRequestBody
+	if err := c.BindJSON(&login); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	login.Password, err = auth.HashPassword(login.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	if *login.Role == "user" {
+		user, err := data.Userlogin(string(login.Email))
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		err = auth.CheckPassword(user.Password, login.Password)
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		token, err := auth.GenerateJWTToken(user.Id.Hex(), *login.Role)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"token": token})
+		return
+	}
+	if *login.Role == "admin" {
+		admin, err := data.AdminLogin(string(login.Email))
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		err = auth.CheckPassword(admin.Password, login.Password)
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		token, err := auth.GenerateJWTToken(admin.Id.Hex(), *login.Role)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"token": token})
+		return
+	}
+	if *login.Role == "employee" {
+		employee, err := data.EmployeeLogin(string(login.Email))
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		err = auth.CheckPassword(employee.Password, login.Password)
+		if err != nil {
+			c.JSON(401, gin.H{"error": err.Error()})
+			return
+		}
+		token, err := auth.GenerateJWTToken(employee.Id.Hex(), *login.Role)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"token": token})
+		return
+	}
+	c.JSON(400, gin.H{"error": "role is required"})
+}
+
+// PostUser implements ServerInterface.
+func (a *API) PostUser(c *gin.Context) {
+	var err error
+	var user models.PostUserJSONRequestBody
+	if err := c.BindJSON(&user); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	user.Password, err = auth.HashPassword(user.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	id, err := data.CreateUser(&user)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	token, err := auth.GenerateJWTToken(id, "user")
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error})
+		return
+	}
+	c.JSON(201, gin.H{"token": token})
+}
+
+// PutEmployeeAddcaseCaseid implements ServerInterface.
+func (a *API) PutEmployeeAddcaseCaseid(c *gin.Context, caseid string) {
+	panic("unimplemented")
+}
+
+// PutUserUserid implements ServerInterface.
+func (a *API) PutUserUserid(c *gin.Context, userid string) {
+	panic("unimplemented")
 }
 
 func NewAPI() *API {
