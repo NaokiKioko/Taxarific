@@ -2,8 +2,10 @@ package data
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
+	"taxarific_users_api/auth"
 	"taxarific_users_api/models"
 
 	"github.com/joho/godotenv"
@@ -46,27 +48,76 @@ func adminCollection() *mongo.Collection {
 	return client.Database("Taxarific").Collection("admins")
 }
 
-// TODO Users
-func CreateUser(user models.User) (string, error) {
-	result, err := userCollection().InsertOne(context.Background(), &user)
+func Userlogin(login *models.PostLoginJSONRequestBody) (string, error) {
+	var user models.User
+	err := userCollection().FindOne(context.Background(), bson.M{"email": login.Email}).Decode(&user)
+	if err != nil {
+		return "", errors.New("user not found")
+	}
+	if err := auth.CheckPassword(user.Password, login.Password); err != nil {
+		return "", errors.New("invalid password")
+	}
+	token, err := auth.GenerateJWTToken(user.Id.Hex(), "user")
 	if err != nil {
 		return "", err
 	}
-	return result.InsertedID.(primitive.ObjectID).Hex(), nil
+	return token, nil
 }
 
-func GetUser(id string) (models.User, error) {
-	objId, err := GetObjectID(id)
+func AdminLogin(login *models.PostLoginJSONRequestBody) (string, error) {
+	var admin models.Admin
+	err := adminCollection().FindOne(context.Background(), bson.M{"email": login.Email}).Decode(&admin)
 	if err != nil {
-		return models.User{}, err
+		return "", errors.New("admin not found")
 	}
-	var user models.User
-	err = userCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&user)
+	if err := auth.CheckPassword(admin.Password, login.Password); err != nil {
+		return "", errors.New("invalid password")
+	}
+	token, err := auth.GenerateJWTToken(admin.Id.Hex(), "admin")
 	if err != nil {
-		return models.User{}, err
+		return "", err
 	}
-	return user, nil
+	return token, nil
 }
+
+func EmployeeLogin(login *models.PostLoginJSONRequestBody) (string, error) {
+	var employee models.Employee
+	err := employeeCollection().FindOne(context.Background(), bson.M{"email": login.Email}).Decode(&employee)
+	if err != nil {
+		return "", errors.New("employee not found")
+	}
+	if err := auth.CheckPassword(employee.Password, login.Password); err != nil {
+		return "", errors.New("invalid password")
+	}
+	token, err := auth.GenerateJWTToken(employee.Id.Hex(), "employee")
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
+// Users
+func CreateUser(user *models.PostUserJSONRequestBody) (string, error) {
+	insertedId, err := userCollection().InsertOne(context.Background(), &user)
+	if err != nil {
+		return "", err
+	}
+	token, err := auth.GenerateJWTToken(insertedId.InsertedID.(primitive.ObjectID).Hex(), "user")
+	return token, nil
+}
+
+// func GetUser(id string) (models.User, error) {
+// 	objId, err := GetObjectID(id)
+// 	if err != nil {
+// 		return models.User{}, err
+// 	}
+// 	var user models.User
+// 	err = userCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&user)
+// 	if err != nil {
+// 		return models.User{}, err
+// 	}
+// 	return user, nil
+// }
 
 func GetUsers() ([]models.User, error) {
 	var users []models.User
@@ -86,19 +137,19 @@ func GetUsers() ([]models.User, error) {
 	return users, nil
 }
 
-func UpdateUser(id string, user models.User) error {
-	objId, err := GetObjectID(id)
-	if err != nil {
-		return err
-	}
-	_, err = userCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": user})
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func UpdateUser(id string, user *models.User) error {
+// 	objId, err := GetObjectID(id)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err = userCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": user})
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
-func PutUser(id string, user models.User) error {
+func PutUser(id string, user *models.User) error {
 	objId, err := GetObjectID(id)
 	if err != nil {
 		return err
@@ -122,29 +173,29 @@ func DeleteUser(id string) error {
 	return nil
 }
 
-// TODO Employees
-func CreateEmployee(employee models.Employee) (string, error) {
-	result, err := employeeCollection().InsertOne(context.Background(), &employee)
+// Employees
+func CreateEmployee(employee *models.PostAdminEmployeeJSONRequestBody) error {
+	_, err := employeeCollection().InsertOne(context.Background(), &employee)
 	if err != nil {
-		return "", err
+		return err
 	}
-	return result.InsertedID.(primitive.ObjectID).Hex(), nil
+	return nil
 }
 
-func GetEmployee(id string) (models.Employee, error) {
+func GetEmployee(id string) (*models.Employee, error) {
 	objId, err := GetObjectID(id)
 	if err != nil {
-		return models.Employee{}, err
+		return &models.Employee{}, err
 	}
 	var employee models.Employee
 	err = employeeCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&employee)
 	if err != nil {
-		return models.Employee{}, err
+		return &models.Employee{}, err
 	}
-	return employee, nil
+	return &employee, nil
 }
 
-func GetEmployees() ([]models.Employee, error) {
+func GetEmployees() (*[]models.Employee, error) {
 	var employees []models.Employee
 	cursor, err := employeeCollection().Find(context.Background(), bson.M{})
 	if err != nil {
@@ -159,10 +210,10 @@ func GetEmployees() ([]models.Employee, error) {
 		}
 		employees = append(employees, employee)
 	}
-	return employees, nil
+	return &employees, nil
 }
 
-func PutEmployee(id string, employee models.Employee) error {
+func PutEmployee(id string, employee *models.Employee) error {
 	objId, err := GetObjectID(id)
 	if err != nil {
 		return err
@@ -186,16 +237,16 @@ func DeleteEmployee(id string) error {
 	return nil
 }
 
-// TODO Admins
-func CreateAdmin(admin models.Admin) (string, error) {
-	result, err := adminCollection().InsertOne(context.Background(), &admin)
+// Admins
+func CreateAdmin(admin *models.PostAdminJSONRequestBody) error {
+	_, err := adminCollection().InsertOne(context.Background(), &admin)
 	if err != nil {
-		return "", err
+		return err
 	}
-	return result.InsertedID.(primitive.ObjectID).Hex(), nil
+	return nil
 }
 
-func GetAdmins() ([]models.Admin, error) {
+func GetAdmins() (*[]models.Admin, error) {
 	var admins []models.Admin
 	cursor, err := adminCollection().Find(context.Background(), bson.M{})
 	if err != nil {
@@ -210,23 +261,23 @@ func GetAdmins() ([]models.Admin, error) {
 		}
 		admins = append(admins, admin)
 	}
-	return admins, nil
+	return &admins, nil
 }
 
-func GetAdmin(id string) (models.Admin, error) {
+func GetAdmin(id string) (*models.Admin, error) {
 	objId, err := GetObjectID(id)
 	if err != nil {
-		return models.Admin{}, err
+		return &models.Admin{}, err
 	}
 	var admin models.Admin
 	err = adminCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&admin)
 	if err != nil {
-		return models.Admin{}, err
+		return &models.Admin{}, err
 	}
-	return admin, nil
+	return &admin, nil
 }
 
-func PutAdmin(id string, admin models.Admin) error {
+func PutAdmin(id string, admin *models.Admin) error {
 	objId, err := GetObjectID(id)
 	if err != nil {
 		return err
@@ -251,10 +302,10 @@ func DeleteAdmin(id string) error {
 }
 
 // Helper functions
-func GetObjectID(id string) (primitive.ObjectID, error) {
+func GetObjectID(id string) (*primitive.ObjectID, error) {
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return primitive.NilObjectID, err
+		return &primitive.NilObjectID, err
 	}
-	return objId, nil
+	return &objId, nil
 }

@@ -1,4 +1,4 @@
-package services
+package auth 
 
 import (
 	"errors"
@@ -17,13 +17,10 @@ type claims struct {
 }
 
 func GenerateJWTToken(id string, role string) (string, error) {
-	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &claims{
 		Id:   id,
 		Role: role,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-		},
+		RegisteredClaims: jwt.RegisteredClaims{},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	err := godotenv.Load(".env")
@@ -68,6 +65,6 @@ func HashPassword(password string) (string, error) {
 	}
 	return string(bytes), nil
 }
-func CheckPassword(providedPassword string) error {
-	return bcrypt.CompareHashAndPassword([]byte(providedPassword), []byte(providedPassword))
+func CheckPassword(providedPassword string, storedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(providedPassword), []byte(storedPassword))
 }

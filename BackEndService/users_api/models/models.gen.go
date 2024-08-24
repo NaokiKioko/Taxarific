@@ -4,20 +4,16 @@
 package models
 
 import (
-	"time"
-
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Admin defines model for Admin.
 type Admin struct {
-	CreatedAt *time.Time          `json:"created_at,omitempty"`
-	Email     openapi_types.Email `json:"email"`
-	Id        primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
-	Name      string              `json:"name"`
-	Password  string              `json:"omitempty"`
-	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
+	Email    openapi_types.Email `json:"email"`
+	Id       primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
+	Name     string              `json:"name"`
+	Password string              `json:"omitempty"`
 }
 
 // Case defines model for Case.
@@ -25,48 +21,81 @@ type Case struct {
 	CaseDescription *string             `json:"case_description,omitempty"`
 	CaseId          *openapi_types.UUID `json:"case_id,omitempty"`
 	CaseStatus      *string             `json:"case_status,omitempty"`
-	CreatedAt       *time.Time          `json:"created_at,omitempty"`
-	UpdatedAt       *time.Time          `json:"updated_at,omitempty"`
 	UserId          openapi_types.UUID  `json:"user_id"`
 }
 
 // Employee defines model for Employee.
 type Employee struct {
-	Cases     *[]Case             `json:"cases,omitempty"`
-	CreatedAt *time.Time          `json:"created_at,omitempty"`
-	Email     openapi_types.Email `json:"email"`
-	Id        primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
-	Name      string              `json:"name"`
-	Password  string              `json:"omitempty"`
-	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
+	Cases    *[]Case             `json:"cases,omitempty"`
+	Email    openapi_types.Email `json:"email"`
+	Id       primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
+	Name     string              `json:"name"`
+	Password string              `json:"omitempty"`
 }
 
 // User defines model for User.
 type User struct {
-	Address   *string             `json:"address,omitempty"`
-	City      *string             `json:"city,omitempty"`
-	CreatedAt *time.Time          `json:"created_at,omitempty"`
-	Email     openapi_types.Email `json:"email"`
-	Id        primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
-	Name      string              `json:"name"`
-	Password  string              `json:"omitempty"`
-	Phone     *string             `json:"phone,omitempty"`
-	State     *string             `json:"state,omitempty"`
-	UpdatedAt *time.Time          `json:"updated_at,omitempty"`
-	Zip       *string             `json:"zip,omitempty"`
+	Case     *Case               `json:"case,omitempty"`
+	Email    openapi_types.Email `json:"email"`
+	Id       primitive.ObjectID  `bson:"_id,omitempty" json:"id"`
+	Name     string              `json:"name"`
+	Password string              `json:"omitempty"`
+}
+
+// PostAdminJSONBody defines parameters for PostAdmin.
+type PostAdminJSONBody struct {
+	Email    openapi_types.Email `json:"email"`
+	Name     string              `json:"name"`
+	Password string              `json:"password"`
+}
+
+// PostAdminEmployeeJSONBody defines parameters for PostAdminEmployee.
+type PostAdminEmployeeJSONBody struct {
+	Email    openapi_types.Email `json:"email"`
+	Name     string              `json:"name"`
+	Password string              `json:"password"`
+}
+
+// PutEmployeeAddcaseCaseidJSONBody defines parameters for PutEmployeeAddcaseCaseid.
+type PutEmployeeAddcaseCaseidJSONBody struct {
+	Case Case `json:"case"`
+}
+
+// PostLoginJSONBody defines parameters for PostLogin.
+type PostLoginJSONBody struct {
+	Email    openapi_types.Email `json:"email"`
+	Password string              `json:"password"`
+	Role     *string             `json:"role,omitempty"`
+}
+
+// PostUserJSONBody defines parameters for PostUser.
+type PostUserJSONBody struct {
+	Email    openapi_types.Email `json:"email"`
+	Name     string              `json:"name"`
+	Password string              `json:"password"`
+}
+
+// PutUserUseridJSONBody defines parameters for PutUserUserid.
+type PutUserUseridJSONBody struct {
+	Email    *openapi_types.Email `json:"email,omitempty"`
+	Name     *string              `json:"name,omitempty"`
+	Password *string              `json:"password,omitempty"`
 }
 
 // PostAdminJSONRequestBody defines body for PostAdmin for application/json ContentType.
-type PostAdminJSONRequestBody = Admin
+type PostAdminJSONRequestBody PostAdminJSONBody
 
 // PostAdminEmployeeJSONRequestBody defines body for PostAdminEmployee for application/json ContentType.
-type PostAdminEmployeeJSONRequestBody = Employee
+type PostAdminEmployeeJSONRequestBody PostAdminEmployeeJSONBody
 
-// PutEmployeeEmployeeidJSONRequestBody defines body for PutEmployeeEmployeeid for application/json ContentType.
-type PutEmployeeEmployeeidJSONRequestBody = Employee
+// PutEmployeeAddcaseCaseidJSONRequestBody defines body for PutEmployeeAddcaseCaseid for application/json ContentType.
+type PutEmployeeAddcaseCaseidJSONRequestBody PutEmployeeAddcaseCaseidJSONBody
+
+// PostLoginJSONRequestBody defines body for PostLogin for application/json ContentType.
+type PostLoginJSONRequestBody PostLoginJSONBody
 
 // PostUserJSONRequestBody defines body for PostUser for application/json ContentType.
-type PostUserJSONRequestBody = User
+type PostUserJSONRequestBody PostUserJSONBody
 
 // PutUserUseridJSONRequestBody defines body for PutUserUserid for application/json ContentType.
-type PutUserUseridJSONRequestBody = User
+type PutUserUseridJSONRequestBody PutUserUseridJSONBody
