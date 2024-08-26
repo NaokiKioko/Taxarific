@@ -1,6 +1,6 @@
 <div id="mainDiv" class="bg-[#A89B9D] p-6 rounded-lg shadow-md max-w-lg mx-auto my-5">
     <h2 class="text-2xl font-bold text-center">Log in</h2>
-    <p class="text-center">Please login to access your account</p>
+    <p class="text-center">Please login to access your user account</p>
     <div class="container py-10 px-10 mx-0 min-w-full flex flex-col items-center">
         <form id="loginForm">
             <div class="mb-6">
@@ -10,8 +10,9 @@
             <div class="mb-6">
                 <label class="block mb-4 text-[#2A2C24] font-bold">Password</label>
                 <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" type="password" name="password" required>
+                <input class="hidden" type="text" name="role" value="user">
             </div>
-            <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" hx-post="/ethansStuff" hx-ext="json-enc" hx-target="#auth-message">Log in</button>
+            <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" hx-post="/login" hx-ext="json-enc" hx-target="#auth-message">Log in</button>
         </form>
         <div id="auth-message" class="mb-4"></div>
     </div>
@@ -24,37 +25,11 @@
         }
     });
     
-    function setCookie(name, value, days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
-    }
-
     function handleAuthResponse(evt, action) {
         var authMessage = document.getElementById('auth-message');
         if (evt.detail.xhr.status >= 200 && evt.detail.xhr.status < 300) {
-            var responseText = evt.detail.xhr.responseText;
-            var response = JSON.parse(responseText);
-            var token = response.token;
-            if (!token) {
-                authMessage.textContent = 'User registered, please login.';
-                authMessage.classList.remove('text-red-500');
-                authMessage.classList.add('text-green-500');
-                return;
-            }
-
-            setCookie('jwt', token, 7);
-            
-            authMessage.textContent = action + ' successful. Redirecting...';
-            authMessage.classList.remove('text-red-500');
-            authMessage.classList.add('text-green-500');
-            setTimeout(function() {
-                window.location.href = '/';
-            }, 1000);
+            // No need to set the cookie on the frontend if the backend does it
+            window.location.reload();  // Refresh the page on success
         } else {
             authMessage.textContent = 'Error: ' + evt.detail.xhr.responseText;
             authMessage.classList.remove('text-green-500');

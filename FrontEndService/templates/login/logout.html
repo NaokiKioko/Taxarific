@@ -1,0 +1,35 @@
+
+<div id="mainDiv" class="bg-[#A89B9D] p-8 rounded-lg shadow-lg max-w-md mx-auto my-10">
+
+    <h2 class="text-3xl font-bold text-center mb-6 text-[#2A2C24]">Log Out Confirmation</h2>
+    <p class="text-lg text-center text-[#575A4B] mb-8">Are you sure you want to log out?</p>
+    <div class="flex justify-around">
+        <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-6 rounded-lg shadow-md transition-all duration-200" hx-post="/logout" hx-target="#auth-message">
+            Yes
+        </button>
+        <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-6 rounded-lg shadow-md transition-all duration-200" hx-get="/start" hx-target="#mainDiv">
+            No
+        </button>
+    </div>
+    <div id="auth-message" class="mt-6 text-center text-sm"></div>
+</div>
+
+<script>
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.target === document.getElementById('auth-message')) {
+            handleAuthResponse(evt, 'Logout');
+        }
+    });
+    
+    function handleAuthResponse(evt, action) {
+        var authMessage = document.getElementById('auth-message');
+        if (evt.detail.xhr.status >= 200 && evt.detail.xhr.status < 300) {
+            // No need to set the cookie on the frontend if the backend does it
+            window.location.reload();  // Refresh the page on success
+        } else {
+            authMessage.textContent = 'Error: ' + evt.detail.xhr.responseText;
+            authMessage.classList.remove('text-green-500');
+            authMessage.classList.add('text-red-500');
+        }
+    }
+</script>

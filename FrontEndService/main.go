@@ -1,17 +1,42 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"html/template"
-	"io"
 	"net/http"
-	"strings"
+
+	openapi_types "github.com/oapi-codegen/runtime/types"
 
 	"github.com/gin-gonic/gin"
+	// "golang.org/x/crypto/bcrypt"
 )
 
 var usersBackendURl string = "http://backend-users-api:8080"
+
+// var domainName string = "Taxarific.com"
+var domainName string = "http://localhost:3000"
+
+
+type User struct {
+	Address  string              `json:"address,omitempty"`
+	City     string              `json:"city,omitempty"`
+	Email    openapi_types.Email `json:"email"`
+	Name     string              `json:"name"`
+	Password string              `json:"password"`
+	Phone    string              `json:"phone,omitempty"`
+	State    string              `json:"state,omitempty"`
+	Zip      string              `json:"zip,omitempty"`
+}
+type JWTResponse struct {
+	Token string `json:"token"`
+}
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Role     string `json:"role"`
+}
 
 func main() {
 	router := gin.Default()
@@ -19,13 +44,21 @@ func main() {
 	// Define routes
 	router.GET("/", handleIndex)
 	router.GET("/tax", handleTax)
+
 	router.GET("/start", handleStart)
 	router.GET("/quiz", handleQuiz)
-	router.GET("/login", handleLogin)
+
+	router.GET("/login", handleUserLogin)
+	router.GET("/employee/login", handleRmployeeLogin)
+	router.GET("/admin/login", handleAdminLogin)
+
+
 	router.POST("/login", handleLoginPost)
+	router.GET("/logout", handleLogout)
+	router.POST("/logout", handleLogoutPost)
+
 	router.GET("/signup", handleSignup)
 	router.POST("/signup", handleSignupPost)
-	router.GET("/profilenav", handleProfileNav)
 
 	// Start server
 	router.Run(":3000")
@@ -33,6 +66,16 @@ func main() {
 }
 
 func handleIndex(c *gin.Context) {
+	jwt, err := c.Cookie("JWT")
+	if err != nil {
+		jwt = ""
+	}
+	if jwt != "" {
+		println("User is logged in")
+		renderTemplate(c, "index/user.html", nil)
+		return
+	}
+	println("User is not logged in")
 	renderTemplate(c, "index/guest.html", nil)
 }
 
@@ -41,129 +84,161 @@ func handleTax(c *gin.Context) {
 }
 
 func handleStart(c *gin.Context) {
-	renderTemplate(c, "start.html", nil)
+	role, err := c.Cookie("role")
+	if err != nil {
+		role = ""
+	}
+	JWT, err := c.Cookie("JWT")
+	if err != nil {
+		JWT = ""
+	}
+
+	if JWT == "" && role != "" {
+		if role == "user" {
+			renderTemplate(c, "login/userlogin.html", nil)
+			return
+		}
+		if role == "employee" {
+			renderTemplate(c, "login/employeelogin.html", nil)
+			return
+		}
+		if role == "admin" {
+			renderTemplate(c, "login/adminlogin.html", nil)
+			return
+		}
+	}
+
+	if JWT != "" && role == "user" {
+		renderTemplate(c, "start.html", nil)
+		return
+	}
+	if JWT != "" && (role == "employee" || role == "admin") {
+		renderTemplate(c, "nothing.html", nil)
+		return
+	}
+	
+	renderTemplate(c, "login/signup.html", nil)
 }
 
 func handleQuiz(c *gin.Context) {
 	renderTemplate(c, "quiz.html", nil)
 }
 
-func handleLogin(c *gin.Context) {
-	renderTemplate(c, "login/login.html", nil)
+func handleUserLogin(c *gin.Context) {
+	role, err := c.Cookie("role")
+	if err != nil {
+		role = ""
+	}
+	if role != "" {
+		if role == "user" {
+			println("User loggining in")
+			renderTemplate(c, "login/userlogin.html", nil)
+			return
+		}
+		if role == "employee" {
+			println("Employee loggining in")
+			renderTemplate(c, "login/employeelogin.html", nil)
+			return
+		}
+		if role == "admin" {
+			println("Admin loggining in")
+			renderTemplate(c, "login/adminlogin.html", nil)
+			return
+		}
+	}
+	renderTemplate(c, "login/userlogin.html", nil)
+}
+
+func handleRmployeeLogin(c *gin.Context) {
+	renderTemplate(c, "login/employeelogin.html", nil)
+}
+
+func handleAdminLogin(c *gin.Context) {
+	renderTemplate(c, "login/adminlogin.html", nil)
+}
+
+func handleLogout(c *gin.Context) {
+	renderTemplate(c, "login/logout.html", nil)
+}
+
+func handleLogoutPost(c *gin.Context) {
+	c.SetCookie("JWT", "", 0, "/", domainName, false, true)
+	println("Logged out")
+	c.JSON(http.StatusOK, nil)
 }
 
 func handleLoginPost(c *gin.Context) {
-	email := c.PostForm("email")
-	password := c.PostForm("password")
-
-	body := strings.NewReader(`{"username":"` + email + `","password":"` + password + `"}`)
-
-	req, err := http.NewRequest("POST", usersBackendURl+"/login", body)
+	jwt, err := c.Cookie("JWT")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+		jwt = ""
+	}
+	if jwt != "" {
+		c.JSON(http.StatusOK, gin.H{"token": jwt})
 		return
 	}
 
-	req.Header.Set("Content-Type", "application/json")
-	res, err := http.DefaultClient.Do(req)
+	LoginRequest := LoginRequest{
+		Username: c.PostForm("email"),
+		Password: c.PostForm("password"),
+		Role:     c.PostForm("role"),
+	}
+	JWTResponse := JWTResponse{}
+	err = SendRequest("GET", LoginRequest, usersBackendURl+"/login", &JWTResponse, "")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to execute request"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request Login" + err.Error()})
 		return
 	}
-	defer res.Body.Close()
-
-	resBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response body"})
-		return
-	}
-	c.SetCookie("jwt", string(resBody), 3600, "/", "localhost", false, true)
-	
-	response := map[string]string{"token": string(resBody)}
-	c.JSON(http.StatusOK, response)
-}
-
-func makeUserRequestBody(c *gin.Context) (map[string]string, error) {
-	requestBody := make(map[string]string)
-
-	if username := c.PostForm("username"); username != "" {
-		requestBody["username"] = username
-	} else {
-		c.String(http.StatusBadRequest, "username is required")
-		return nil, errors.New("username is required")
-	}
-
-	if password := c.PostForm("password"); password != "" {
-		requestBody["password"] = password
-	} else {
-		c.String(http.StatusBadRequest, "password is required")
-		return nil, errors.New("password is required")
-	}
-
-	if email := c.PostForm("email"); email != "" {
-		requestBody["email"] = email
-	}
-	if phone := c.PostForm("phone"); phone != "" {
-		requestBody["phone"] = phone
-	}
-	if address := c.PostForm("address"); address != "" {
-		requestBody["address"] = address
-	}
-	if city := c.PostForm("city"); city != "" {
-		requestBody["city"] = city
-	}
-	if state := c.PostForm("state"); state != "" {
-		requestBody["state"] = state
-	}
-	if zip := c.PostForm("zip"); zip != "" {
-		requestBody["zip"] = zip
-	}
-	return requestBody, nil
+	c.SetCookie("JWT", "Bearer "+JWTResponse.Token, 3600, "/", domainName, false, true)
+	c.JSON(http.StatusOK, gin.H{"token": JWTResponse.Token})
 }
 
 func handleSignupPost(c *gin.Context) {
+	// id := primitive.NewObjectID()
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+	name := c.PostForm("name")
+	phone := c.PostForm("phone")
+	address := c.PostForm("address")
+	city := c.PostForm("city")
+	state := c.PostForm("state")
+	zip := c.PostForm("zip")
 
-	requestBody, err := makeUserRequestBody(c)
+	hashedPassword, err := HashPassword(password)
 	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
 		return
 	}
 
-	body, err := json.Marshal(requestBody)
+	requestBody := User{
+		Address:  address,
+		City:     city,
+		Email:    openapi_types.Email(email),
+		Name:     name,
+		Password: hashedPassword,
+		Phone:    phone,
+		State:    state,
+		Zip:      zip,
+	}
+
+	fmt.Println(requestBody)
+
+	JWTResponse := JWTResponse{}
+	err = SendRequest("POST", requestBody, usersBackendURl+"/user", &JWTResponse, "")
 	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to marshal request body")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
 		return
 	}
 
-	req, err := http.NewRequest("POST", usersBackendURl+"/user", strings.NewReader(string(body)))
-	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to create request")
-		return
-	}
+	println("JWTResponse Token:")
+	println(JWTResponse.Token)
 
-	req.Header.Set("Content-Type", "application/json")
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to execute request")
-		return
-	}
-	defer res.Body.Close()
-
-	resBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to read response body")
-		return
-	}
-
-	response := map[string]string{"token": string(resBody)}
-	c.JSON(http.StatusOK, response)
+	c.SetCookie("JWT", "Bearer "+JWTResponse.Token, 3600, "/", domainName, false, true)
+	c.SetCookie("role", "user", 3600, "/", domainName, false, true)
+	c.JSON(http.StatusOK, nil)
 }
 
 func handleSignup(c *gin.Context) {
 	renderTemplate(c, "login/signup.html", nil)
-}
-
-func handleProfileNav(c *gin.Context) {
-	renderTemplate(c, "profilenav.html", nil)
 }
 
 func renderTemplate(c *gin.Context, templateName string, data interface{}) {
@@ -177,4 +252,49 @@ func renderTemplate(c *gin.Context, templateName string, data interface{}) {
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 	}
+}
+
+func SendRequest(httpverb string, data interface{}, url string, responseObj interface{}, authHeader string) error {
+	// Marshal the request data into JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("failed to marshal data: %w", err)
+	}
+
+	// Create a new HTTP POST request
+	req, err := http.NewRequest(httpverb, url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		println(err)
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if authHeader != "" {
+		req.Header.Set("Authorization", authHeader)
+	}
+	// Perform the HTTP request
+	client := &http.Client{}
+	println("Sending request to backend")
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to send request 1: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return fmt.Errorf("failed to send request 2: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	// Decode the response body into the response object
+	err = json.NewDecoder(resp.Body).Decode(responseObj)
+	if err != nil {
+		println("Failed to decode response")
+		return fmt.Errorf("failed to decode response: %w", err)
+	}
+	return nil
+}
+
+func HashPassword(password string) (string, error) {
+	// bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	// return string(bytes), err
+	return password, nil
 }
