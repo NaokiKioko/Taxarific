@@ -58,11 +58,6 @@ func (a *API) PostAdmin(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	admin.Password, err = auth.HashPassword(admin.Password)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
 	err = data.CreateAdmin(&admin)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -93,15 +88,9 @@ func (a *API) PostAdminEmployee(c *gin.Context) {
 
 // PostLogin implements ServerInterface.
 func (a *API) PostLogin(c *gin.Context) {
-	var err error
 	var login models.PostLoginJSONRequestBody
 	if err := c.BindJSON(&login); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-	login.Password, err = auth.HashPassword(login.Password)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	if *login.Role == "user" {
@@ -192,7 +181,21 @@ func (a *API) PostUser(c *gin.Context) {
 
 // PutEmployeeAddcaseCaseid implements ServerInterface.
 func (a *API) PutEmployeeAddcaseCaseid(c *gin.Context, caseid string) {
-	panic("unimplemented")
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "employee" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
+	employee, err := data.AddCaseToEmployee(claim.UserId, caseid)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "cases added", "cases": employee.Cases})
 }
 
 // PutUserUserid implements ServerInterface.

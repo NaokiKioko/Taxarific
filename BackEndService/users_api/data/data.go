@@ -194,9 +194,10 @@ func GetEmployees() (*[]models.Employee, error) {
 	return &employees, nil
 }
 
-// !! change to update the cases of the employee not to update the employee
-// func PutEmployeeCase() error {
-// }
+// !! IMPLEMENT !!
+func AddCaseToEmployee(employeeId string, caseId string) (*models.Employee, error) {
+	panic("not implemented")
+}
 
 // func DeleteEmployee(id string) error {
 // 	objId, err := GetObjectID(id)
