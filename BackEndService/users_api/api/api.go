@@ -13,33 +13,24 @@ type API struct{}
 
 // GetCase implements ServerInterface.
 func (a *API) GetCase(c *gin.Context) {
-	users, err := data.GetUsers()
+	cases, err := getAllCases()
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
-	}
-	var cases []models.Case
-	for _, user := range *users {
-		if user.Case != nil {
-			cases = append(cases, *user.Case)
-		}
 	}
 	c.JSON(200, cases)
 }
 
 // GetCasePending implements ServerInterface.
 func (a *API) GetCasePending(c *gin.Context) {
-	users, err := data.GetUsers()
+	cases, err := getAllCases()
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	var cases []models.Case
-	for _, user := range *users {
-		if user.Case != nil {
-			if *user.Case.CaseStatus == "pending"{
-				cases = append(cases, *user.Case)
-			}
+	for _, cases := range *cases {
+		if *cases.CaseStatus == "pending" {
+			c.JSON(200, cases)
 		}
 	}
 	c.JSON(200, cases)
@@ -56,6 +47,10 @@ func (a *API) GetUserProfile(c *gin.Context) {
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
+	}
+	user = &models.User{
+		Email: user.Email,
+		Name:  user.Name,
 	}
 	c.JSON(200, user)
 }
@@ -310,7 +305,12 @@ func (a *API) PutEmployeeAddcaseCaseid(c *gin.Context, caseid string) {
 		c.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
-	employee, err := data.AddCaseToEmployee(claim.UserId, caseid)
+	cases, err := getAllCases()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	employee, err := data.AddCaseToEmployee(cases)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -320,4 +320,19 @@ func (a *API) PutEmployeeAddcaseCaseid(c *gin.Context, caseid string) {
 
 func NewAPI() *API {
 	return &API{}
+}
+
+// Helper methods
+func getAllCases() (*[]models.Case, error) {
+	users, err := data.GetUsers()
+	if err != nil {
+		return nil, err
+	}
+	var cases []models.Case
+	for _, user := range *users {
+		if user.Case != nil {
+			cases = append(cases, *user.Case)
+		}
+	}
+	return &cases, nil
 }
