@@ -61,9 +61,9 @@ func main() {
 	router.POST("/signup", handleSignupPost)
 
 	router.GET("/profile", handleProfile)
-	router.PUT("/profile", handleProfilePut)
+	// router.PUT("/profile", handleProfilePut)
 
-	router.GET("/claim", handleClaim)
+	// router.GET("/claim", handleClaim)
 
 	// Start server
 	router.Run(":3000")
