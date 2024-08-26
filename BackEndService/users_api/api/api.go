@@ -58,6 +58,11 @@ func (a *API) PostAdmin(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	admin.Password, err = auth.HashPassword(admin.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	err = data.CreateAdmin(&admin)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -88,9 +93,15 @@ func (a *API) PostAdminEmployee(c *gin.Context) {
 
 // PostLogin implements ServerInterface.
 func (a *API) PostLogin(c *gin.Context) {
+	var err error
 	var login models.PostLoginJSONRequestBody
 	if err := c.BindJSON(&login); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	login.Password, err = auth.HashPassword(login.Password)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	if *login.Role == "user" {
