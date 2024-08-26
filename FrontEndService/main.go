@@ -60,6 +60,11 @@ func main() {
 	router.GET("/signup", handleSignup)
 	router.POST("/signup", handleSignupPost)
 
+	router.GET("/profile", handleProfile)
+	router.PUT("/profile", handleProfilePut)
+
+	router.GET("/claim", handleClaim)
+
 	// Start server
 	router.Run(":3000")
 	print("Server started on port 3000")
@@ -198,7 +203,7 @@ func handleLoginPost(c *gin.Context) {
 	println("JWTResponse Token:")
 	println(JWTResponse.Token)
 
-	c.SetCookie("JWT", "Bearer "+JWTResponse.Token, 3600, "/", domainName, false, true)
+	c.SetCookie("JWT", JWTResponse.Token, 3600, "/", domainName, false, true)
 	c.SetCookie("role", "user", 3600, "/", domainName, false, true)
 	c.JSON(http.StatusOK, nil)
 }
@@ -243,13 +248,25 @@ func handleSignupPost(c *gin.Context) {
 	println("JWTResponse Token:")
 	println(JWTResponse.Token)
 
-	c.SetCookie("JWT", "Bearer "+JWTResponse.Token, 3600, "/", domainName, false, true)
+	c.SetCookie("JWT", JWTResponse.Token, 3600, "/", domainName, false, true)
 	c.SetCookie("role", "user", 3600, "/", domainName, false, true)
 	c.JSON(http.StatusOK, nil)
 }
 
 func handleSignup(c *gin.Context) {
 	renderTemplate(c, "login/signup.html", nil)
+}
+
+func handleProfile(c *gin.Context) {
+	jwt, err := c.Cookie("JWT")
+	if err != nil {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+	user := User{}
+	SendRequest("GET", nil, usersBackendURl+"/user/profile", user, jwt)
+
+	renderTemplate(c, "profile.html", user)
 }
 
 func renderTemplate(c *gin.Context, templateName string, data interface{}) {
@@ -267,6 +284,7 @@ func renderTemplate(c *gin.Context, templateName string, data interface{}) {
 
 func SendRequest(httpverb string, data interface{}, url string, responseObj interface{}, authHeader string) error {
 	// Marshal the request data into JSON
+	
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("failed to marshal data: %w", err)
