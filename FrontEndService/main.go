@@ -182,14 +182,25 @@ func handleLoginPost(c *gin.Context) {
 		Password: c.PostForm("password"),
 		Role:     c.PostForm("role"),
 	}
+	println("LoginRequest:")
+	println(LoginRequest.Username)
+	println(LoginRequest.Password)
+	println(LoginRequest.Role)
+
 	JWTResponse := JWTResponse{}
-	err = SendRequest("GET", LoginRequest, usersBackendURl+"/login", &JWTResponse, "")
+	err = SendRequest("POST", LoginRequest, usersBackendURl+"/login", &JWTResponse, "")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request Login" + err.Error()})
+		fmt.Println("Failed to send request. Login: " + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Login: " + err.Error()})
 		return
 	}
+
+	println("JWTResponse Token:")
+	println(JWTResponse.Token)
+
 	c.SetCookie("JWT", "Bearer "+JWTResponse.Token, 3600, "/", domainName, false, true)
-	c.JSON(http.StatusOK, gin.H{"token": JWTResponse.Token})
+	c.SetCookie("role", "user", 3600, "/", domainName, false, true)
+	c.JSON(http.StatusOK, nil)
 }
 
 func handleSignupPost(c *gin.Context) {
