@@ -1,18 +1,24 @@
 services:
+  # !! Backend services
   backend-users-api:
     build: ./BackEndService/users_api
     ports:
-      - "8080:8080"
+      - "8080"
     restart: on-failure
     networks:
       - taxarific
   email-service:
     build: ./BackEndService/email_service
     ports:
-      - "8082:8082"
+      - "8082"
     restart: on-failure
+    depends_on:
+      - kafka
+      - zookeeper
     networks:
       - taxarific
+
+  # !! Outside services
   kafka:
     image: bitnami/kafka:latest
     ports:
@@ -36,7 +42,9 @@ services:
       - zoo_data:/bitnami
     restart: on-failure
     networks:
-      - taxarific 
+      - taxarific
+
+  # !! Frontend service
   frontend-service:
     build: ./FrontEndService
     ports:
@@ -45,7 +53,7 @@ services:
     networks:
       - taxarific
 volumes:
-  kafka_data: {}  
+  kafka_data: {}
   zoo_data: {}
 networks:
   taxarific:
