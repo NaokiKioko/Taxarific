@@ -226,25 +226,11 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/EmployeeResponse"
-  # /employee/getavailablecases:
-  #   get:
-  #     tags:
-  #       - employee
-  #     summary: Get all available cases
-  #     description: Get all cases that are available for employees to take on.
-  #     responses:
-  #       "200":
-  #         description: A list of all available cases.
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 $ref: "#/components/schemas/Case"
   /employee/addcase/{caseid}:
     put:
       tags:
         - employee
+        - case
       summary: Allows Employees to update certain information
       description: Update an employee that is able to take on user cases.
       parameters:
@@ -407,8 +393,6 @@ components:
       required:
         - user_id
       properties:
-        user_id:
-          type: string
         case_id:
           type: string
         case_status:
