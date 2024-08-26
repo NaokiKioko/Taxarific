@@ -1,5 +1,5 @@
 <div id="mainDiv" class="container mx-auto py-8 px-4 my-5">
-    <div class="bg-[#A89B9D] p-6 rounded-lg shadow-md max-w-lg mx-auto">
+    <div class="bg-[#A89B9D] p-6 rounded-lg max-w-lg mx-auto">
         <h2 class="text-2xl font-bold mb-6 flex justify-center">User Profile</h2>
         <form id="signupForm">
             <div class="mb-6 flex space-x-4">
@@ -43,42 +43,32 @@
                 </div>
             </div>
             <div class="mt-6 flex justify-center">
-                <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" type="submit" hx-post="/signup" hx-include="#signupForm" hx-target="#mainDiv">
+                <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" type="submit" hx-post="/signup" hx-target="#auth-message" hx-include="#signupForm">
                     Sign up
                 </button>
             </div>
         </form>
+        <div id="auth-message" class="mb-4"></div>
     </div>
 </div>
 
 <script>
     document.body.addEventListener('htmx:afterRequest', function(evt) {
-        if (evt.detail.target === document.getElementById('mainDiv')) {
-            handleAuthResponse(evt, 'Signup');
+        if (evt.detail.target === document.getElementById('auth-message')) {
+            handleAuthResponse(evt, 'Login');
         }
     });
 
     function handleAuthResponse(evt, action) {
-        var mainDiv = document.getElementById('mainDiv');
+        var authMessage = document.getElementById('auth-message');
         if (evt.detail.xhr.status >= 200 && evt.detail.xhr.status < 300) {
-            var responseText = evt.detail.xhr.responseText;
-            var response = JSON.parse(responseText);
-            var token = response.token;
-            if (!token) {
-                setTimeout(function() {
-                    htmx.ajax('GET', '/login', {target: '#mainDiv'});
-                }, 1000);
-                return;
-            }
-            else if (token){
-            setTimeout(function() {
-                window.location.href = '/';
-            }, 1000);
-            }
+            // No need to set the cookie on the frontend if the backend does it
+            window.location.reload();  // Refresh the page on success
         } else {
-            setTimeout(function() {
-                htmx.ajax('GET', '/login', {target: '#mainDiv'});
-            }, 1000);
+            authMessage.textContent = 'Error: ' + evt.detail.xhr.responseText;
+            authMessage.classList.remove('text-green-500');
+            authMessage.classList.add('text-red-500');
         }
     }
+    
 </script>
