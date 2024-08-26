@@ -50,6 +50,7 @@ func adminCollection() *mongo.Collection {
 	return client.Database("Taxarific").Collection("admin")
 }
 
+// Logins
 func Userlogin(email string) (*models.User, error) {
 	var user models.User
 	err := userCollection().FindOne(context.Background(), bson.M{"email": email}).Decode(&user)
@@ -141,17 +142,17 @@ func PutUser(id string, user *models.User) error {
 	return nil
 }
 
-func DeleteUser(id string) error {
-	objId, err := GetObjectID(id)
-	if err != nil {
-		return err
-	}
-	_, err = userCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func DeleteUser(id string) error {
+// 	objId, err := GetObjectID(id)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err = userCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // Employees
 func CreateEmployee(employee *models.PostAdminEmployeeJSONRequestBody) error {
@@ -162,18 +163,18 @@ func CreateEmployee(employee *models.PostAdminEmployeeJSONRequestBody) error {
 	return nil
 }
 
-func GetEmployee(id string) (*models.Employee, error) {
-	objId, err := GetObjectID(id)
-	if err != nil {
-		return &models.Employee{}, err
-	}
-	var employee models.Employee
-	err = employeeCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&employee)
-	if err != nil {
-		return &models.Employee{}, err
-	}
-	return &employee, nil
-}
+// func GetEmployee(id string) (*models.Employee, error) {
+// 	objId, err := GetObjectID(id)
+// 	if err != nil {
+// 		return &models.Employee{}, err
+// 	}
+// 	var employee models.Employee
+// 	err = employeeCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&employee)
+// 	if err != nil {
+// 		return &models.Employee{}, err
+// 	}
+// 	return &employee, nil
+// }
 
 func GetEmployees() (*[]models.Employee, error) {
 	var employees []models.Employee
@@ -193,29 +194,22 @@ func GetEmployees() (*[]models.Employee, error) {
 	return &employees, nil
 }
 
-func PutEmployee(id string, employee *models.Employee) error {
-	objId, err := GetObjectID(id)
-	if err != nil {
-		return err
-	}
-	_, err = employeeCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": employee})
-	if err != nil {
-		return err
-	}
-	return nil
+// !! IMPLEMENT !!
+func AddCaseToEmployee(employeeId string, caseId string) (*models.Employee, error) {
+	panic("not implemented")
 }
 
-func DeleteEmployee(id string) error {
-	objId, err := GetObjectID(id)
-	if err != nil {
-		return err
-	}
-	_, err = employeeCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func DeleteEmployee(id string) error {
+// 	objId, err := GetObjectID(id)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err = employeeCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // Admins
 func CreateAdmin(admin *models.PostAdminJSONRequestBody) error {
@@ -244,42 +238,42 @@ func GetAdmins() (*[]models.Admin, error) {
 	return &admins, nil
 }
 
-func GetAdmin(id string) (*models.Admin, error) {
-	objId, err := GetObjectID(id)
-	if err != nil {
-		return &models.Admin{}, err
-	}
-	var admin models.Admin
-	err = adminCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&admin)
-	if err != nil {
-		return &models.Admin{}, err
-	}
-	return &admin, nil
-}
+// func GetAdmin(id string) (*models.Admin, error) {
+// 	objId, err := GetObjectID(id)
+// 	if err != nil {
+// 		return &models.Admin{}, err
+// 	}
+// 	var admin models.Admin
+// 	err = adminCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&admin)
+// 	if err != nil {
+// 		return &models.Admin{}, err
+// 	}
+// 	return &admin, nil
+// }
 
-func PutAdmin(id string, admin *models.Admin) error {
-	objId, err := GetObjectID(id)
-	if err != nil {
-		return err
-	}
-	_, err = adminCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": admin})
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func PutAdmin(id string, admin *models.Admin) error {
+// 	objId, err := GetObjectID(id)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err = adminCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": admin})
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
-func DeleteAdmin(id string) error {
-	objId, err := GetObjectID(id)
-	if err != nil {
-		return err
-	}
-	_, err = adminCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
-	if err != nil {
-		return err
-	}
-	return nil
-}
+// func DeleteAdmin(id string) error {
+// 	objId, err := GetObjectID(id)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err = adminCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
 // Helper functions
 func GetObjectID(id string) (*primitive.ObjectID, error) {

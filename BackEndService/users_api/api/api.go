@@ -4,11 +4,28 @@ import (
 	"taxarific_users_api/auth"
 	"taxarific_users_api/data"
 	"taxarific_users_api/models"
+	"taxarific_users_api/mq"
 
 	"github.com/gin-gonic/gin"
 )
 
 type API struct{}
+
+// GetCase implements ServerInterface.
+func (a *API) GetCase(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// GetCasePending implements ServerInterface.
+func (a *API) GetCasePending(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// GetUserUserid implements ServerInterface.
+func (a *API) GetUserUserid(c *gin.Context, userid string) {
+	panic("unimplemented")
+}
+
 
 // GetAdmin implements ServerInterface.
 func (a *API) GetAdmin(c *gin.Context) {
@@ -40,19 +57,22 @@ func (a *API) GetUser(c *gin.Context) {
 	c.JSON(200, users)
 }
 
+// PostCase implements ServerInterface.
+func (a *API) PostCase(c *gin.Context) {
+	panic("unimplemented")
+}
+
 // PostAdmin implements ServerInterface.
 func (a *API) PostAdmin(c *gin.Context) {
-	var err error
-	// !! TEST FIRST
-	// claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
-	// if err != nil {
-	// 	c.JSON(401, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// if claim.Role != "admin" {
-	// 	c.JSON(401, gin.H{"error": "unauthorized"})
-	// 	return
-	// }
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "admin" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
 	var admin models.PostAdminJSONRequestBody
 	if err := c.BindJSON(&admin); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -68,12 +88,24 @@ func (a *API) PostAdmin(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	user := models.User{
+		Email: admin.Email,
+	}
+	mq.AccountCreationEmail(&user)
+	c.JSON(201, gin.H{"message": "admin created"})
 }
 
 // PostAdminEmployee implements ServerInterface.
 func (a *API) PostAdminEmployee(c *gin.Context) {
-	var err error
-	// !! Add auth
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "admin" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
 	var employee models.PostAdminEmployeeJSONRequestBody
 	if err := c.BindJSON(&employee); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -93,15 +125,9 @@ func (a *API) PostAdminEmployee(c *gin.Context) {
 
 // PostLogin implements ServerInterface.
 func (a *API) PostLogin(c *gin.Context) {
-	var err error
 	var login models.PostLoginJSONRequestBody
 	if err := c.BindJSON(&login); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-	login.Password, err = auth.HashPassword(login.Password)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	if *login.Role == "user" {
@@ -110,7 +136,7 @@ func (a *API) PostLogin(c *gin.Context) {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
 		}
-		err = auth.CheckPassword(user.Password, login.Password)
+		err = auth.CheckPassword(*user.Password, login.Password)
 		if err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
@@ -129,7 +155,7 @@ func (a *API) PostLogin(c *gin.Context) {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
 		}
-		err = auth.CheckPassword(admin.Password, login.Password)
+		err = auth.CheckPassword(*admin.Password, login.Password)
 		if err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
@@ -148,7 +174,7 @@ func (a *API) PostLogin(c *gin.Context) {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
 		}
-		err = auth.CheckPassword(employee.Password, login.Password)
+		err = auth.CheckPassword(*employee.Password, login.Password)
 		if err != nil {
 			c.JSON(401, gin.H{"error": err.Error()})
 			return
@@ -192,7 +218,21 @@ func (a *API) PostUser(c *gin.Context) {
 
 // PutEmployeeAddcaseCaseid implements ServerInterface.
 func (a *API) PutEmployeeAddcaseCaseid(c *gin.Context, caseid string) {
-	panic("unimplemented")
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "employee" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
+	employee, err := data.AddCaseToEmployee(claim.UserId, caseid)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "cases added", "cases": employee.Cases})
 }
 
 // PutUserUserid implements ServerInterface.
