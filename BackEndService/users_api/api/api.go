@@ -48,7 +48,8 @@ func (a *API) GetUserProfile(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	user = &models.User{
+	*user = models.User{
+		Id: 	user.Id,
 		Email: user.Email,
 		Name:  user.Name,
 	}
