@@ -18,8 +18,8 @@ var usersBackendURl string = "http://backend-users-api:8080"
 // var domainName string = "Taxarific.com"
 var domainName string = "http://localhost:3000"
 
-
 type User struct {
+	Id       string              `json:"id,omitempty"`
 	Address  string              `json:"address,omitempty"`
 	City     string              `json:"city,omitempty"`
 	Email    openapi_types.Email `json:"email"`
@@ -28,6 +28,7 @@ type User struct {
 	Phone    string              `json:"phone,omitempty"`
 	State    string              `json:"state,omitempty"`
 	Zip      string              `json:"zip,omitempty"`
+	omitempty string 			`json:"omitempty,omitempty"`
 }
 type JWTResponse struct {
 	Token string `json:"token"`
@@ -51,7 +52,6 @@ func main() {
 	router.GET("/login", handleUserLogin)
 	router.GET("/employee/login", handleRmployeeLogin)
 	router.GET("/admin/login", handleAdminLogin)
-
 
 	router.POST("/login", handleLoginPost)
 	router.GET("/logout", handleLogout)
@@ -121,7 +121,7 @@ func handleStart(c *gin.Context) {
 		renderTemplate(c, "nothing.html", nil)
 		return
 	}
-	
+
 	renderTemplate(c, "login/signup.html", nil)
 }
 
@@ -265,7 +265,7 @@ func handleProfile(c *gin.Context) {
 	}
 	user := User{}
 	SendRequest("GET", nil, usersBackendURl+"/user/profile", user, jwt)
-
+	fmt.Print(user)
 	renderTemplate(c, "profile.html", user)
 }
 
@@ -284,7 +284,7 @@ func renderTemplate(c *gin.Context, templateName string, data interface{}) {
 
 func SendRequest(httpverb string, data interface{}, url string, responseObj interface{}, authHeader string) error {
 	// Marshal the request data into JSON
-	
+
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("failed to marshal data: %w", err)
