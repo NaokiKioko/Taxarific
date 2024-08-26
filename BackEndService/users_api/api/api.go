@@ -13,12 +13,36 @@ type API struct{}
 
 // GetCase implements ServerInterface.
 func (a *API) GetCase(c *gin.Context) {
-	panic("unimplemented")
+	users, err := data.GetUsers()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	var cases []models.Case
+	for _, user := range *users {
+		if user.Case != nil {
+			cases = append(cases, *user.Case)
+		}
+	}
+	c.JSON(200, cases)
 }
 
 // GetCasePending implements ServerInterface.
 func (a *API) GetCasePending(c *gin.Context) {
-	panic("unimplemented")
+	users, err := data.GetUsers()
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	var cases []models.Case
+	for _, user := range *users {
+		if user.Case != nil {
+			if *user.Case.CaseStatus == "pending"{
+				cases = append(cases, *user.Case)
+			}
+		}
+	}
+	c.JSON(200, cases)
 }
 
 // GetUserProfile implements ServerInterface.
@@ -38,7 +62,27 @@ func (a *API) GetUserProfile(c *gin.Context) {
 
 // PutUserCase implements ServerInterface.
 func (a *API) PutUserCase(c *gin.Context) {
-	var updatedUser models.PutUserCaseJSONRequestBody
+	var putUserCaseRequest models.PutUserCaseJSONRequestBody
+	if err := c.BindJSON(&putUserCaseRequest); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := data.GetUser(claim.UserId)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	user.Case = &putUserCaseRequest.Case
+}
+
+// PutUserProfile implements ServerInterface.
+func (a *API) PutUserProfile(c *gin.Context) {
+	var updatedUser models.PutUserProfileJSONRequestBody
 	if err := c.BindJSON(&updatedUser); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -53,13 +97,22 @@ func (a *API) PutUserCase(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	if updatedUser.Email != nil {
+		user.Email = *updatedUser.Email
+	}
+	if updatedUser.Password != nil {
+		hashedPassword, err := auth.HashPassword(*updatedUser.Password)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		user.Password = &hashedPassword
+	}
+	if updatedUser.Name != nil {
+		user.Name = *updatedUser.Name
+	}
 	data.UpdateUser(claim.UserId, user)
 	c.JSON(201, gin.H{"message": "case added"})
-}
-
-// PutUserProfile implements ServerInterface.
-func (a *API) PutUserProfile(c *gin.Context) {
-	panic("unimplemented")
 }
 
 // GetAdmin implements ServerInterface.
