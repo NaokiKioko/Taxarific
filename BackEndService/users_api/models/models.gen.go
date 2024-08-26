@@ -13,7 +13,7 @@ type Admin struct {
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
-	Password *string             `json:"omitempty"`
+	Password *string             `json:"password,omitempty"`
 }
 
 // Case defines model for Case.
@@ -31,7 +31,7 @@ type Employee struct {
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
-	Password *string             `json:"omitempty"`
+	Password *string             `json:"password,omitempty"`
 }
 
 // EmployeeResponse defines model for EmployeeResponse.
@@ -48,7 +48,7 @@ type User struct {
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
-	Password *string             `json:"omitempty"`
+	Password *string             `json:"password,omitempty"`
 }
 
 // UserResponse defines model for UserResponse.

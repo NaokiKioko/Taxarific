@@ -336,8 +336,6 @@ components:
           format: email
         password:
           type: string
-          x-oapi-codegen-extra-tags:
-            json: omitempty
         case:
           type: object
           $ref: "#/components/schemas/Case"
@@ -362,8 +360,6 @@ components:
           format: email
         password:
           type: string
-          x-oapi-codegen-extra-tags:
-            json: omitempty
         cases:
           type: array
           items:
@@ -403,7 +399,6 @@ components:
         password:
           type: string
           x-oapi-codegen-extra-tags:
-            json: omitempty
     UserResponse:
       type: object
       properties:

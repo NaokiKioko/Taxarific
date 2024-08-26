@@ -25,15 +25,18 @@ func NewDB() error {
 	var err error
 	err = godotenv.Load(".env")
 	if err != nil {
+		fmt.Println("Error loading .env file")
 		return err
 	}
 	uri := os.Getenv("MONGO_CON_URI")
 	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
+		fmt.Println("Error connecting to Atlas.." + os.Getenv("MONGO_CON_URI"))
 		return err
 	}
 	var result bson.M
 	if err := client.Database("Taxarific").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result); err != nil {
+		fmt.Println("Error pinging Atlas")
 		return err
 	}
 	fmt.Println("Successfully connected to Atlas")
@@ -156,7 +159,8 @@ func CreateEmployee(employee *models.PostAdminEmployeeJSONRequestBody) error {
 }
 
 func AddCaseToEmployee(*[]models.Case) (*models.Employee, error) {
-	employee, err := GetEmployee()
+	// employee, err := GetEmployee()
+	panic("not implemented")
 }
 
 // func GetEmployee(id string) (*models.Employee, error) {
