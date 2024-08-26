@@ -4,6 +4,7 @@ import (
 	"taxarific_users_api/auth"
 	"taxarific_users_api/data"
 	"taxarific_users_api/models"
+	"taxarific_users_api/mq"
 
 	"github.com/gin-gonic/gin"
 )
@@ -68,6 +69,11 @@ func (a *API) PostAdmin(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	user := models.User{
+		Email: admin.Email,
+	}
+	mq.AccountCreationEmail(&user)
+	c.JSON(201, gin.H{"message": "admin created"})
 }
 
 // PostAdminEmployee implements ServerInterface.
