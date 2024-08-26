@@ -44,7 +44,9 @@ func main() {
 
 	// Define routes
 	router.GET("/", handleIndex)
-	router.GET("/tax", handleTax)
+	router.GET("/case", handleClaim)
+	// router.POST("/case", handleClaimPost)
+	router.GET("/case/view", handleClaimView)
 
 	router.GET("/start", handleStart)
 	router.GET("/quiz", handleQuiz)
@@ -61,6 +63,7 @@ func main() {
 	router.POST("/signup", handleSignupPost)
 
 	router.GET("/profile", handleProfile)
+	// router.GET("/profile/update", handleProfileUpdate)
 	// router.PUT("/profile", handleProfilePut)
 
 	// router.GET("/claim", handleClaim)
@@ -84,8 +87,12 @@ func handleIndex(c *gin.Context) {
 	renderTemplate(c, "index/guest.html", nil)
 }
 
-func handleTax(c *gin.Context) {
+func handleClaim(c *gin.Context) {
 	renderTemplate(c, "tax.html", nil)
+}
+
+func handleClaimView(c *gin.Context) {
+	renderTemplate(c, "cases.html", nil)
 }
 
 func handleStart(c *gin.Context) {
