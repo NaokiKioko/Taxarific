@@ -41,7 +41,7 @@
                             <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" type="password" name="password" required>
                             <input class="hidden" type="text" name="role" value="employee">
                         </div>
-                        <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" hx-post="/login" hx-ext="json-enc" hx-target="#auth-message">Log in</button>
+                        <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" type="submit" hx-post="/login" hx-target="#auth-message" hx-include="#loginForm">Log in</button>
                     </form>
                     <div id="auth-message" class="mb-4"></div>
                 </div>
@@ -57,6 +57,7 @@
                     var authMessage = document.getElementById('auth-message');
                     if (evt.detail.xhr.status >= 200 && evt.detail.xhr.status < 300) {
                         // No need to set the cookie on the frontend if the backend does it
+                        window.location = "/"
                         window.location.reload();  // Refresh the page on success
                     } else {
                         authMessage.textContent = 'Error: ' + evt.detail.xhr.responseText;

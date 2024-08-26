@@ -44,6 +44,7 @@ type EmployeeResponse struct {
 
 // User defines model for User.
 type User struct {
+	Case     *Case               `json:"case,omitempty"`
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
@@ -100,6 +101,7 @@ type PutUserCaseJSONBody struct {
 // PutUserProfileJSONBody defines parameters for PutUserProfile.
 type PutUserProfileJSONBody struct {
 	Email    *openapi_types.Email `json:"email,omitempty"`
+	Name     *string              `json:"name,omitempty"`
 	Password *string              `json:"password,omitempty"`
 }
 
