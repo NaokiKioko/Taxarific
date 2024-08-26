@@ -15,7 +15,7 @@
             <div class="mb-6 flex space-x-4">
                 <div class="w-1/2">
                     <label class="block text-sm font-bold mb-2">Password</label>
-                    <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" name="zip" type="password">
+                    <input class="w-full font-bold py-2 px-3 rounded bg-[#cfcfea]" name="password" type="password">
                 </div>
                 <div class="w-1/2">
                     <label class="block text-sm font-bold mb-2">Phone</label>
@@ -58,16 +58,6 @@
         }
     });
 
-    function setCookie(name, value, days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
-    }
-
     function handleAuthResponse(evt, action) {
         var mainDiv = document.getElementById('mainDiv');
         if (evt.detail.xhr.status >= 200 && evt.detail.xhr.status < 300) {
@@ -80,19 +70,12 @@
                 }, 1000);
                 return;
             }
-            
-            setCookie('jwt', token, 7);
-
-            mainDiv.textContent = action + ' successful. Redirecting...';
-            mainDiv.classList.remove('text-red-500');
-            mainDiv.classList.add('text-green-500');
+            else if (token){
             setTimeout(function() {
                 window.location.href = '/';
             }, 1000);
+            }
         } else {
-            mainDiv.textContent = 'Error: ' + evt.detail.xhr.responseText + '. Redirecting to login...';
-            mainDiv.classList.remove('text-green-500');
-            mainDiv.classList.add('text-red-500');
             setTimeout(function() {
                 htmx.ajax('GET', '/login', {target: '#mainDiv'});
             }, 1000);
