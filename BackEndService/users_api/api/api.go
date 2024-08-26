@@ -21,11 +21,46 @@ func (a *API) GetCasePending(c *gin.Context) {
 	panic("unimplemented")
 }
 
-// GetUserUserid implements ServerInterface.
-func (a *API) GetUserUserid(c *gin.Context, userid string) {
-	panic("unimplemented")
+// GetUserProfile implements ServerInterface.
+func (a *API) GetUserProfile(c *gin.Context) {
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := data.GetUser(claim.UserId)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, user)
 }
 
+// PutUserCase implements ServerInterface.
+func (a *API) PutUserCase(c *gin.Context) {
+	var updatedUser models.PutUserCaseJSONRequestBody
+	if err := c.BindJSON(&updatedUser); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := data.GetUser(claim.UserId)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	data.UpdateUser(claim.UserId, user)
+	c.JSON(201, gin.H{"message": "case added"})
+}
+
+// PutUserProfile implements ServerInterface.
+func (a *API) PutUserProfile(c *gin.Context) {
+	panic("unimplemented")
+}
 
 // GetAdmin implements ServerInterface.
 func (a *API) GetAdmin(c *gin.Context) {
@@ -55,11 +90,6 @@ func (a *API) GetUser(c *gin.Context) {
 		return
 	}
 	c.JSON(200, users)
-}
-
-// PostCase implements ServerInterface.
-func (a *API) PostCase(c *gin.Context) {
-	panic("unimplemented")
 }
 
 // PostAdmin implements ServerInterface.
@@ -233,11 +263,6 @@ func (a *API) PutEmployeeAddcaseCaseid(c *gin.Context, caseid string) {
 		return
 	}
 	c.JSON(200, gin.H{"message": "cases added", "cases": employee.Cases})
-}
-
-// PutUserUserid implements ServerInterface.
-func (a *API) PutUserUserid(c *gin.Context, userid string) {
-	panic("unimplemented")
 }
 
 func NewAPI() *API {

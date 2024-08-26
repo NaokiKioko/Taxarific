@@ -21,7 +21,6 @@ type Case struct {
 	CaseDescription *string `json:"case_description,omitempty"`
 	CaseId          *string `json:"case_id,omitempty"`
 	CaseStatus      *string `json:"case_status,omitempty"`
-	UserId          string  `json:"user_id"`
 }
 
 // Employee defines model for Employee.
@@ -72,14 +71,6 @@ type PostAdminEmployeeJSONBody struct {
 	Password string              `json:"password"`
 }
 
-// PostCaseJSONBody defines parameters for PostCase.
-type PostCaseJSONBody struct {
-	CaseDescription string `json:"case_description"`
-	CaseId          string `json:"case_id"`
-	CaseStatus      string `json:"case_status"`
-	UserId          string `json:"user_id"`
-}
-
 // PutEmployeeAddcaseCaseidJSONBody defines parameters for PutEmployeeAddcaseCaseid.
 type PutEmployeeAddcaseCaseidJSONBody struct {
 	Case Case `json:"case"`
@@ -101,10 +92,14 @@ type PostUserJSONBody struct {
 	Password string              `json:"password"`
 }
 
-// PutUserUseridJSONBody defines parameters for PutUserUserid.
-type PutUserUseridJSONBody struct {
+// PutUserCaseJSONBody defines parameters for PutUserCase.
+type PutUserCaseJSONBody struct {
+	Case Case `json:"case"`
+}
+
+// PutUserProfileJSONBody defines parameters for PutUserProfile.
+type PutUserProfileJSONBody struct {
 	Email    *openapi_types.Email `json:"email,omitempty"`
-	Name     *string              `json:"name,omitempty"`
 	Password *string              `json:"password,omitempty"`
 }
 
@@ -113,9 +108,6 @@ type PostAdminJSONRequestBody PostAdminJSONBody
 
 // PostAdminEmployeeJSONRequestBody defines body for PostAdminEmployee for application/json ContentType.
 type PostAdminEmployeeJSONRequestBody PostAdminEmployeeJSONBody
-
-// PostCaseJSONRequestBody defines body for PostCase for application/json ContentType.
-type PostCaseJSONRequestBody PostCaseJSONBody
 
 // PutEmployeeAddcaseCaseidJSONRequestBody defines body for PutEmployeeAddcaseCaseid for application/json ContentType.
 type PutEmployeeAddcaseCaseidJSONRequestBody PutEmployeeAddcaseCaseidJSONBody
@@ -126,5 +118,8 @@ type PostLoginJSONRequestBody PostLoginJSONBody
 // PostUserJSONRequestBody defines body for PostUser for application/json ContentType.
 type PostUserJSONRequestBody PostUserJSONBody
 
-// PutUserUseridJSONRequestBody defines body for PutUserUserid for application/json ContentType.
-type PutUserUseridJSONRequestBody PutUserUseridJSONBody
+// PutUserCaseJSONRequestBody defines body for PutUserCase for application/json ContentType.
+type PutUserCaseJSONRequestBody PutUserCaseJSONBody
+
+// PutUserProfileJSONRequestBody defines body for PutUserProfile for application/json ContentType.
+type PutUserProfileJSONRequestBody PutUserProfileJSONBody

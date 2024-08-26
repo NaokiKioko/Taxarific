@@ -94,19 +94,12 @@ paths:
                   token:
                     type: string
                     description: JWT token
-  /user/{userid}:
+  /user/profile:
     get:
       tags:
         - users
       summary: Get a user
-      description: Get a user that has signed up for taxarific.
-      parameters:
-        - name: userid
-          in: path
-          description: ID of the user to get.
-          required: true
-          schema:
-            type: string
+      description: Get a user that has signed up for taxarific. Gets user through the JWT token.
       responses:
         "200":
           description: User found.
@@ -120,22 +113,13 @@ paths:
       tags:
         - users
       summary: Update a user
-      description: Update a user that has signed up for taxarific.
-      parameters:
-        - name: userid
-          in: path
-          description: ID of the user to update.
-          required: true
-          schema:
-            type: string
+      description: Update a user that has signed up for taxarific. Gets user through the JWT token.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               properties:
-                name:
-                  type: string
                 email:
                   type: string
                   format: email
@@ -150,6 +134,30 @@ paths:
                 $ref: "#/components/schemas/UserResponse"
         "404":
           description: User not found.
+  /user/case:
+    put:
+      tags:
+        - user
+      summary: Allows users to submit a case
+      description: Submit a case that the employee will take on. Gets the user through the JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - case
+              properties:
+                case:
+                  type: object
+                  $ref: "#/components/schemas/Case"
+      responses:
+        "201":
+          description: Case submitted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Case"
   /case:
     get:
       tags:
@@ -165,37 +173,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Case"
-    post:
-      tags:
-        - case
-      summary: Create a case
-      description: Create a case that has been submitted by a user.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              required:
-                - user_id
-                - case_id
-                - case_status
-                - case_description
-              properties:
-                user_id:
-                  type: string
-                case_id:
-                  type: string
-                case_status:
-                  type: string
-                case_description:
-                  type: string
-      responses:
-        "201":
-          description: Case created successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Case"
   /case/pending:
     get:
       tags:
