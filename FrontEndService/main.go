@@ -289,9 +289,6 @@ func SendRequest(httpverb string, data interface{}, url string, responseObj inte
 	if err != nil {
 		return fmt.Errorf("failed to send request 1: %w", err)
 	}
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("failed to send request 2: %w", err)
-	}
 
 	defer resp.Body.Close()
 
