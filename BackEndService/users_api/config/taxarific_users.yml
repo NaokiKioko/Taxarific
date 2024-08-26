@@ -120,6 +120,8 @@ paths:
           application/json:
             schema:
               properties:
+                name:
+                  type: string
                 email:
                   type: string
                   format: email
@@ -336,6 +338,9 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: omitempty
+        case:
+          type: object
+          $ref: "#/components/schemas/Case"
     Employee:
       type: object
       required:
