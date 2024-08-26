@@ -18,28 +18,44 @@ type Admin struct {
 
 // Case defines model for Case.
 type Case struct {
-	CaseDescription *string             `json:"case_description,omitempty"`
-	CaseId          *openapi_types.UUID `json:"case_id,omitempty"`
-	CaseStatus      *string             `json:"case_status,omitempty"`
-	UserId          openapi_types.UUID  `json:"user_id"`
+	CaseDescription *string `json:"case_description,omitempty"`
+	CaseId          *string `json:"case_id,omitempty"`
+	CaseStatus      *string `json:"case_status,omitempty"`
+	UserId          string  `json:"user_id"`
 }
 
 // Employee defines model for Employee.
 type Employee struct {
-	Cases    *[]Case             `json:"cases,omitempty"`
+	Cases *[]struct {
+		CaseId *string `json:"case_id,omitempty"`
+	} `json:"cases,omitempty"`
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
 	Password *string             `json:"omitempty"`
 }
 
+// EmployeeResponse defines model for EmployeeResponse.
+type EmployeeResponse struct {
+	Cases *[]Case `json:"cases,omitempty"`
+	Email *string `json:"email,omitempty"`
+	Id    *string `json:"id,omitempty"`
+	Name  *string `json:"name,omitempty"`
+}
+
 // User defines model for User.
 type User struct {
-	Case     *Case               `json:"case,omitempty"`
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
 	Password *string             `json:"omitempty"`
+}
+
+// UserResponse defines model for UserResponse.
+type UserResponse struct {
+	Email *string `json:"email,omitempty"`
+	Id    *string `json:"id,omitempty"`
+	Name  *string `json:"name,omitempty"`
 }
 
 // PostAdminJSONBody defines parameters for PostAdmin.
@@ -56,6 +72,14 @@ type PostAdminEmployeeJSONBody struct {
 	Password string              `json:"password"`
 }
 
+// PostCaseJSONBody defines parameters for PostCase.
+type PostCaseJSONBody struct {
+	CaseDescription string `json:"case_description"`
+	CaseId          string `json:"case_id"`
+	CaseStatus      string `json:"case_status"`
+	UserId          string `json:"user_id"`
+}
+
 // PutEmployeeAddcaseCaseidJSONBody defines parameters for PutEmployeeAddcaseCaseid.
 type PutEmployeeAddcaseCaseidJSONBody struct {
 	Case Case `json:"case"`
@@ -65,7 +89,9 @@ type PutEmployeeAddcaseCaseidJSONBody struct {
 type PostLoginJSONBody struct {
 	Email    openapi_types.Email `json:"email"`
 	Password string              `json:"password"`
-	Role     *string             `json:"role,omitempty"`
+
+	// Role User, Employee, or Admin
+	Role *string `json:"role,omitempty"`
 }
 
 // PostUserJSONBody defines parameters for PostUser.
@@ -87,6 +113,9 @@ type PostAdminJSONRequestBody PostAdminJSONBody
 
 // PostAdminEmployeeJSONRequestBody defines body for PostAdminEmployee for application/json ContentType.
 type PostAdminEmployeeJSONRequestBody PostAdminEmployeeJSONBody
+
+// PostCaseJSONRequestBody defines body for PostCase for application/json ContentType.
+type PostCaseJSONRequestBody PostCaseJSONBody
 
 // PutEmployeeAddcaseCaseidJSONRequestBody defines body for PutEmployeeAddcaseCaseid for application/json ContentType.
 type PutEmployeeAddcaseCaseidJSONRequestBody PutEmployeeAddcaseCaseidJSONBody

@@ -11,6 +11,22 @@ import (
 
 type API struct{}
 
+// GetCase implements ServerInterface.
+func (a *API) GetCase(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// GetCasePending implements ServerInterface.
+func (a *API) GetCasePending(c *gin.Context) {
+	panic("unimplemented")
+}
+
+// GetUserUserid implements ServerInterface.
+func (a *API) GetUserUserid(c *gin.Context, userid string) {
+	panic("unimplemented")
+}
+
+
 // GetAdmin implements ServerInterface.
 func (a *API) GetAdmin(c *gin.Context) {
 	admins, err := data.GetAdmins()
@@ -41,19 +57,22 @@ func (a *API) GetUser(c *gin.Context) {
 	c.JSON(200, users)
 }
 
+// PostCase implements ServerInterface.
+func (a *API) PostCase(c *gin.Context) {
+	panic("unimplemented")
+}
+
 // PostAdmin implements ServerInterface.
 func (a *API) PostAdmin(c *gin.Context) {
-	var err error
-	// !! TEST FIRST
-	// claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
-	// if err != nil {
-	// 	c.JSON(401, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// if claim.Role != "admin" {
-	// 	c.JSON(401, gin.H{"error": "unauthorized"})
-	// 	return
-	// }
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "admin" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
 	var admin models.PostAdminJSONRequestBody
 	if err := c.BindJSON(&admin); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -78,8 +97,15 @@ func (a *API) PostAdmin(c *gin.Context) {
 
 // PostAdminEmployee implements ServerInterface.
 func (a *API) PostAdminEmployee(c *gin.Context) {
-	var err error
-	// !! Add auth
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "admin" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
 	var employee models.PostAdminEmployeeJSONRequestBody
 	if err := c.BindJSON(&employee); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
