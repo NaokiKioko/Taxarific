@@ -87,20 +87,20 @@ func CreateUser(user *models.PostUserJSONRequestBody) (string, error) {
 	return insertedId.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-// func GetUser(id string) (models.User, error) {
-// 	objId, err := GetObjectID(id)
-// 	if err != nil {
-// 		return models.User{}, err
-// 	}
-// 	var user models.User
-// 	err = userCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&user)
-// 	if err != nil {
-// 		return models.User{}, err
-// 	}
-// 	return user, nil
-// }
+func GetUser(id string) (*models.User, error) {
+	objId, err := GetObjectID(id)
+	if err != nil {
+		return nil, err
+	}
+	var user models.User
+	err = userCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
 
-func GetUsers() ([]models.User, error) {
+func GetUsers() (*[]models.User, error) {
 	var users []models.User
 	cursor, err := userCollection().Find(context.Background(), bson.M{})
 	if err != nil {
@@ -115,20 +115,20 @@ func GetUsers() ([]models.User, error) {
 		}
 		users = append(users, user)
 	}
-	return users, nil
+	return &users, nil
 }
 
-// func UpdateUser(id string, user *models.User) error {
-// 	objId, err := GetObjectID(id)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	_, err = userCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": user})
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+func UpdateUser(id string, user *models.User) error {
+	objId, err := GetObjectID(id)
+	if err != nil {
+		return err
+	}
+	_, err = userCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": user})
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func PutUser(id string, user *models.User) error {
 	objId, err := GetObjectID(id)
