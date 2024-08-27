@@ -382,6 +382,7 @@ components:
       properties:
         case_id:
           type: string
+          format: uuid
         marital_status:
           type: string
         dependents:

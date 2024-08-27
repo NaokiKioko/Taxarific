@@ -18,12 +18,12 @@ type Admin struct {
 
 // Case defines model for Case.
 type Case struct {
-	CaseId           *string `json:"case_id,omitempty"`
-	CaseStatus       *string `json:"case_status,omitempty"`
-	Dependents       *int    `json:"dependents,omitempty"`
-	EmploymentStatus *string `json:"employment_status,omitempty"`
-	EstimatedIncome  *string `json:"estimated_income,omitempty"`
-	MaritalStatus    *string `json:"marital_status,omitempty"`
+	CaseId           *openapi_types.UUID `json:"case_id,omitempty"`
+	CaseStatus       *string             `json:"case_status,omitempty"`
+	Dependents       *int                `json:"dependents,omitempty"`
+	EmploymentStatus *string             `json:"employment_status,omitempty"`
+	EstimatedIncome  *string             `json:"estimated_income,omitempty"`
+	MaritalStatus    *string             `json:"marital_status,omitempty"`
 }
 
 // Employee defines model for Employee.
