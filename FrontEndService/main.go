@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 
 	openapi_types "github.com/oapi-codegen/runtime/types"
 
@@ -19,16 +20,16 @@ var usersBackendURl string = "http://backend-users-api:8080"
 var domainName string = "http://localhost:3000"
 
 type User struct {
-	Id       string              `json:"id,omitempty"`
-	Address  string              `json:"address,omitempty"`
-	City     string              `json:"city,omitempty"`
-	Email    openapi_types.Email `json:"email"`
-	Name     string              `json:"name"`
-	Password string              `json:"password"`
-	Phone    string              `json:"phone,omitempty"`
-	State    string              `json:"state,omitempty"`
-	Zip      string              `json:"zip,omitempty"`
-	omitempty string 			`json:"omitempty,omitempty"`
+	Id        string              `json:"id,omitempty"`
+	Address   string              `json:"address,omitempty"`
+	City      string              `json:"city,omitempty"`
+	Email     openapi_types.Email `json:"email"`
+	Name      string              `json:"name"`
+	Password  string              `json:"password"`
+	Phone     string              `json:"phone,omitempty"`
+	State     string              `json:"state,omitempty"`
+	Zip       string              `json:"zip,omitempty"`
+	omitempty string              `json:"omitempty,omitempty"`
 }
 type JWTResponse struct {
 	Token string `json:"token"`
@@ -37,6 +38,12 @@ type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
+}
+type QuizAnswer struct {
+	Marital_status    string `json:"marital_status"`
+	Dependents        int    `json:"dependents"`
+	Employment_status string `json:"employment_status"`
+	Estimated_income  string `json:"estimated_income"`
 }
 
 func main() {
@@ -50,6 +57,7 @@ func main() {
 
 	router.GET("/start", handleStart)
 	router.GET("/quiz", handleQuiz)
+	router.POST("/quiz", handleQuizPost)
 
 	router.GET("/login", handleUserLogin)
 	router.GET("/employee/login", handleRmployeeLogin)
@@ -139,6 +147,47 @@ func handleStart(c *gin.Context) {
 
 func handleQuiz(c *gin.Context) {
 	renderTemplate(c, "quiz.html", nil)
+}
+
+func handleQuizPost(c *gin.Context) {
+
+	jwt, err := c.Cookie("JWT")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get JWT"})
+		return
+	}
+	if jwt == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Not logged in"})
+	}
+
+	marital_status := c.PostForm("marital_status")
+	dependents := c.PostForm("dependents")
+	// parse dependents to int
+	dependentsInt, err := strconv.Atoi(dependents)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse dependents"})
+		return
+	}
+	employment_status := c.PostForm("employment_status")
+	estimated_income := c.PostForm("estimated_income")
+
+	QuizAnswer := QuizAnswer{
+		Marital_status:    marital_status,
+		Dependents:        dependentsInt,
+		Employment_status: employment_status,
+		Estimated_income:  estimated_income,
+	}
+
+	println("QuizAnswer:")
+	println(QuizAnswer.Marital_status)
+	println(QuizAnswer.Dependents)
+	println(QuizAnswer.Employment_status)
+	println(QuizAnswer.Estimated_income)
+
+	SendRequest("POST", QuizAnswer, usersBackendURl+"/user/case", nil, jwt)
+
+	c.JSON(http.StatusOK, nil)
+
 }
 
 func handleUserLogin(c *gin.Context) {

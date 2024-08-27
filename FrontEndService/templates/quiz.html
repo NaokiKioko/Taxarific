@@ -9,19 +9,19 @@
                     <label class="block mb-4 text-[#2A2C24] font-bold">1. What is your marital status?</label>
                     <div class="flex flex-col">
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="maritalStatus" value="Single" required>
+                            <input class="form-radio text-[#575A4B]" type="radio" name="marital_status" value="Single" required>
                             <span class="ml-2 text-[#2A2C24]">Single</span>
                         </label>
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="maritalStatus" value="Married">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="marital_status" value="Married">
                             <span class="ml-2 text-[#2A2C24]">Married</span>
                         </label>
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="maritalStatus" value="Divorced">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="marital_status" value="Divorced">
                             <span class="ml-2 text-[#2A2C24]">Divorced</span>
                         </label>
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="maritalStatus" value="Widowed">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="marital_status" value="Widowed">
                             <span class="ml-2 text-[#2A2C24]">Widowed</span>
                         </label>
                     </div>
@@ -59,15 +59,15 @@
                             <span class="ml-2 text-[#2A2C24]">Employed</span>
                         </label>
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="employmentStatus" value="Self-Employed">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="employment_status" value="Self-Employed">
                             <span class="ml-2 text-[#2A2C24]">Self-Employed</span>
                         </label>
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="employmentStatus" value="Unemployed">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="employment_status" value="Unemployed">
                             <span class="ml-2 text-[#2A2C24]">Unemployed</span>
                         </label>
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="employmentStatus" value="Retired">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="employment_status" value="Retired">
                             <span class="ml-2 text-[#2A2C24]">Retired</span>
                         </label>
                     </div>
@@ -78,28 +78,50 @@
                     <label class="block mb-4 text-[#2A2C24] font-bold">4. What is your estimated annual income?</label>
                     <div class="flex flex-col">
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="income" value="Under $25,000" required>
+                            <input class="form-radio text-[#575A4B]" type="radio" name="estimated_income" value="Under $25,000" required>
                             <span class="ml-2 text-[#2A2C24]">Under $25,000</span>
                         </label>
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="income" value="$25,000 - $50,000">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="estimated_income" value="$25,000 - $50,000">
                             <span class="ml-2 text-[#2A2C24]">$25,000 - $50,000</span>
                         </label>
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="income" value="$50,000 - $100,000">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="estimated_income" value="$50,000 - $100,000">
                             <span class="ml-2 text-[#2A2C24]">$50,000 - $100,000</span>
                         </label>
                         <label class="inline-flex items-center mb-2">
-                            <input class="form-radio text-[#575A4B]" type="radio" name="income" value="Over $100,000">
+                            <input class="form-radio text-[#575A4B]" type="radio" name="estimated_income" value="Over $100,000">
                             <span class="ml-2 text-[#2A2C24]">Over $100,000</span>
                         </label>
                     </div>
                 </div>
                 <!-- Submit Button -->
                 <div class="mt-6 flex justify-center">
-                    <button class="bg-[#575A4B] text-[#CFCFEA] hover:bg-[#816C61] hover:text-[#2A2C24] font-bold py-2 px-4 rounded" type="submit" hx-get="/tax" hx-target="#mainDiv">Submit Information</button>
+                    <button class="bg-[#575A4B] text-[#CFCFEA] hover:bg-[#816C61] hover:text-[#2A2C24] font-bold py-2 px-4 rounded" type="submit" hx-post="/quiz" hx-target="#mainDiv">Submit Information</button>
                 </div>
             </form>
-        </div>
+        </div>        
+            <div id="auth-message" class="mb-4"></div>
     </div>
 </div>
+
+<script>
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.target === document.getElementById('auth-message')) {
+            handleAuthResponse(evt, 'Quiz');
+        }
+    });
+
+    function handleAuthResponse(evt, action) {
+        var authMessage = document.getElementById('auth-message');
+        if (evt.detail.xhr.status >= 200 && evt.detail.xhr.status < 300) {
+            // No need to set the cookie on the frontend if the backend does it
+            // window.location.reload();  // Refresh the page on success
+        } else {
+            authMessage.textContent = 'Error: ' + evt.detail.xhr.responseText;
+            authMessage.classList.remove('text-green-500');
+            authMessage.classList.add('text-red-500');
+        }
+    }
+    
+</script>
