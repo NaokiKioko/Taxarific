@@ -55,6 +55,11 @@ func main() {
 	router.GET("/employee/login", handleRmployeeLogin)
 	router.GET("/admin/login", handleAdminLogin)
 
+	router.GET("/employee/create", handleEmplyeeCreate)
+	router.GET("/employee", handleEmplyee)
+	router.POST("/employee", handleEmployeePost)
+	router.GET("/user", handleUser)
+
 	router.POST("/login", handleLoginPost)
 	router.GET("/logout", handleLogout)
 	router.POST("/logout", handleLogoutPost)
@@ -257,6 +262,89 @@ func handleSignupPost(c *gin.Context) {
 
 	c.SetCookie("JWT", JWTResponse.Token, 3600, "/", domainName, false, true)
 	c.SetCookie("role", "user", 3600, "/", domainName, false, true)
+	c.JSON(http.StatusOK, nil)
+}
+
+func handleEmplyee(c *gin.Context) {
+	JWT := c.Query("JWT")
+	if JWT == "" {
+		renderTemplate(c, "login/employeelogin.html", nil)
+		return
+	}
+	role := c.Query("role")
+	if role != "admin" {
+		renderTemplate(c, "nothing.html", nil)
+		return
+	}
+
+	Employees := []User{}
+	err := SendRequest("GET", nil, usersBackendURl+"/employee", &Employees, JWT)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
+		return
+	}
+	data := struct {
+		Employees []User
+	}{
+		Employees: Employees,
+	}
+	renderTemplate(c, "employee.html", data)
+}
+
+func handleUser(c *gin.Context) {
+	JWT := c.Query("JWT")
+	if JWT == "" {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+	role := c.Query("role")
+	if role != "admin" {
+		renderTemplate(c, "nothing.html", nil)
+		return
+	}
+
+	Users := []User{}
+	err := SendRequest("GET", nil, usersBackendURl+"/user", &Users, JWT)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
+		return
+	}
+	data := struct {
+		Users []User
+	}{
+		Users: Users,
+	}
+	renderTemplate(c, "user.html", data)
+}
+
+func handleEmplyeeCreate(c *gin.Context) {
+	renderTemplate(c, "employeeCreate.html", nil)
+}
+
+func handleEmployeePost(c *gin.Context) {
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+	name := c.PostForm("name")
+
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		return
+	}
+
+	requestBody := User{
+		Email:    openapi_types.Email(email),
+		Name:     name,
+		Password: hashedPassword,
+	}
+
+	fmt.Println(requestBody)
+
+	err = SendRequest("POST", requestBody, usersBackendURl+"/employee", nil, "")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, nil)
 }
 
