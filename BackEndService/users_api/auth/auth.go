@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"os"
+	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/joho/godotenv"
@@ -19,7 +20,9 @@ func GenerateJWTToken(id string, role string) (string, error) {
 	claims := &claims{
 		UserId:           id,
 		Role:             role,
-		RegisteredClaims: jwt.RegisteredClaims{},
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	err := godotenv.Load(".env")
@@ -48,6 +51,10 @@ func ValidateJWTToken(jwtToken string) (*claims, error) {
 	claims, valid := token.Claims.(*claims)
 	if !valid {
 		err = errors.New("invalid token")
+		return nil, err
+	}
+	if !claims.ExpiresAt.Time.IsZero() && claims.ExpiresAt.Time.Before(time.Now()) {
+		err = errors.New("token expired")
 		return nil, err
 	}
 	return claims, nil

@@ -49,7 +49,7 @@ func (a *API) GetUserProfile(c *gin.Context) {
 		return
 	}
 	*user = models.User{
-		Id: 	user.Id,
+		Id:    user.Id,
 		Email: user.Email,
 		Name:  user.Name,
 	}
@@ -74,6 +74,8 @@ func (a *API) PutUserCase(c *gin.Context) {
 		return
 	}
 	user.Case = &putUserCaseRequest.Case
+	data.UpdateUser(claim.UserId, user)
+	c.JSON(201, gin.H{"message": "case added"})
 }
 
 // PutUserProfile implements ServerInterface.
@@ -118,7 +120,15 @@ func (a *API) GetAdmin(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, admins)
+	adminsResponse := make([]models.UserResponse, len(*admins))
+	for i, admin := range *admins {
+		adminsResponse[i] = models.UserResponse{
+			Email: &admin.Email,
+			Id:    &admin.Id,
+			Name:  &admin.Name,
+		}
+	}
+	c.JSON(200, adminsResponse)
 }
 
 // GetEmployee implements ServerInterface.
@@ -127,6 +137,15 @@ func (a *API) GetEmployee(c *gin.Context) {
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
+	}
+	employeeResponses := make([]models.EmployeeResponse, len(*employees))
+	for i, employee := range *employees {
+		employeeResponses[i] = models.EmployeeResponse{
+			Email: &employee.Email,
+			Id:    &employee.Id,
+			Name:  &employee.Name,
+			Cases: employee.Cases,
+		}
 	}
 	c.JSON(200, employees)
 }
@@ -138,7 +157,15 @@ func (a *API) GetUser(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, users)
+	userResponses := make([]models.UserResponse, len(*users))
+	for i, user := range *users {
+		userResponses[i] = models.UserResponse{
+			Email: &user.Email,
+			Id:    &user.Id,
+			Name:  &user.Name,
+		}
+	}
+	c.JSON(200, userResponses)
 }
 
 // PostAdmin implements ServerInterface.

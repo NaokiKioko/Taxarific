@@ -26,7 +26,7 @@ type Case struct {
 // Employee defines model for Employee.
 type Employee struct {
 	Cases *[]struct {
-		CaseId *string `json:"case_id,omitempty"`
+		UserId *primitive.ObjectID `json:"user_id,omitempty"`
 	} `json:"cases,omitempty"`
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
@@ -36,10 +36,12 @@ type Employee struct {
 
 // EmployeeResponse defines model for EmployeeResponse.
 type EmployeeResponse struct {
-	Cases *[]Case `json:"cases,omitempty"`
-	Email *string `json:"email,omitempty"`
-	Id    *string `json:"id,omitempty"`
-	Name  *string `json:"name,omitempty"`
+	Cases *[]struct {
+		UserId *primitive.ObjectID `json:"user_id,omitempty"`
+	} `json:"cases,omitempty"`
+	Email *openapi_types.Email `json:"email,omitempty"`
+	Id    *primitive.ObjectID  `bson:"_id, omitempty" json:"id,omitempty"`
+	Name  *string              `json:"name,omitempty"`
 }
 
 // User defines model for User.
@@ -53,9 +55,9 @@ type User struct {
 
 // UserResponse defines model for UserResponse.
 type UserResponse struct {
-	Email *string `json:"email,omitempty"`
-	Id    *string `json:"id,omitempty"`
-	Name  *string `json:"name,omitempty"`
+	Email *openapi_types.Email `json:"email,omitempty"`
+	Id    *primitive.ObjectID  `bson:"_id, omitempty" json:"id,omitempty"`
+	Name  *string              `json:"name,omitempty"`
 }
 
 // PostAdminJSONBody defines parameters for PostAdmin.
