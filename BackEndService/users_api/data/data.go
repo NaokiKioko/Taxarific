@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"taxarific_users_api/models"
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/oapi-codegen/runtime/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -80,6 +82,7 @@ func EmployeeLogin(email string) (*models.Employee, error) {
 
 // Users
 func CreateUser(user *models.PostUserJSONRequestBody) (string, error) {
+	user.Email = types.Email(strings.ToLower(string(user.Email)))
 	insertedId, err := userCollection().InsertOne(context.Background(), &user)
 	if err != nil {
 		return "", err
@@ -130,18 +133,6 @@ func UpdateUser(id string, user *models.User) error {
 	return nil
 }
 
-func PutUser(id string, user *models.User) error {
-	objId, err := GetObjectID(id)
-	if err != nil {
-		return err
-	}
-	_, err = userCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$set": user})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // func DeleteUser(id string) error {
 // 	objId, err := GetObjectID(id)
 // 	if err != nil {
@@ -156,11 +147,16 @@ func PutUser(id string, user *models.User) error {
 
 // Employees
 func CreateEmployee(employee *models.PostAdminEmployeeJSONRequestBody) error {
+	employee.Email = types.Email(strings.ToLower(string(employee.Email)))
 	_, err := employeeCollection().InsertOne(context.Background(), &employee)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func AddCaseToEmployee(*[]models.Case) (*models.Employee, error) {
+	employee, err := GetEmployee()
 }
 
 // func GetEmployee(id string) (*models.Employee, error) {
@@ -194,11 +190,6 @@ func GetEmployees() (*[]models.Employee, error) {
 	return &employees, nil
 }
 
-// !! IMPLEMENT !!
-func AddCaseToEmployee(employeeId string, caseId string) (*models.Employee, error) {
-	panic("not implemented")
-}
-
 // func DeleteEmployee(id string) error {
 // 	objId, err := GetObjectID(id)
 // 	if err != nil {
@@ -213,6 +204,7 @@ func AddCaseToEmployee(employeeId string, caseId string) (*models.Employee, erro
 
 // Admins
 func CreateAdmin(admin *models.PostAdminJSONRequestBody) error {
+	admin.Email = types.Email(strings.ToLower(string(admin.Email)))
 	_, err := adminCollection().InsertOne(context.Background(), &admin)
 	if err != nil {
 		return err
