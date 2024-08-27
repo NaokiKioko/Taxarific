@@ -23,7 +23,7 @@
                         <th class="px-4 py-2">{{.Employment_status}}</th>
                         <th class="px-4 py-2">{{.Estimated_income}}</th>
                         <td>
-                            <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" hx-delete="/case/{{.id}}">Delete</button>
+                            <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" hx-put="/case/{{.id}}">Add</button>
                         </td>
                     </tr>
                     {{end}}

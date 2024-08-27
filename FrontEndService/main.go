@@ -118,7 +118,7 @@ func handleCaseView(c *gin.Context) {
 		Cases: Cases,
 	}
 
-	SendRequest("GET", nil, usersBackendURl+"case", data, jwt)
+	SendRequest("GET", nil, usersBackendURl+"/case/pending", data, jwt)
 	renderTemplate(c, "cases.html", data)
 }
 
@@ -424,7 +424,8 @@ func handleProfile(c *gin.Context) {
 	}
 	user := User{}
 	SendRequest("GET", nil, usersBackendURl+"/user/profile", user, jwt)
-	fmt.Print(user)
+	fmt.Print("Name: " + user.Name)
+	fmt.Print("Email: " + user.Email)
 	renderTemplate(c, "profile.html", user)
 }
 
@@ -481,6 +482,7 @@ func SendRequest(httpverb string, data interface{}, url string, responseObj inte
 			return fmt.Errorf("failed to decode response: %w", err)
 		}
 	}
+	print("end of SendRequest, statis")
 	return nil
 }
 
