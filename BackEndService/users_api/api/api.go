@@ -7,7 +7,7 @@ import (
 	"taxarific_users_api/mq"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/internal/uuid"
+	"github.com/google/uuid"
 )
 
 type API struct{}
@@ -93,11 +93,12 @@ func (a *API) PutUserCase(c *gin.Context) {
 		return
 	}
 	caseStatus := "pending"
+	uuid := uuid.New()
 
 	var newCase models.Case
-	newCase.CaseId = uuid.New()
+	newCase.CaseId = &uuid
 	newCase.CaseStatus = &caseStatus
-	newCase.CaseId = &putUserCaseRequest.EmploymentStatus
+	newCase.EmploymentStatus = &putUserCaseRequest.EmploymentStatus
 	newCase.CaseStatus = &putUserCaseRequest.EstimatedIncome
 	newCase.Dependents = &putUserCaseRequest.Dependents
 	newCase.MaritalStatus = &putUserCaseRequest.MaritalStatus
@@ -367,9 +368,14 @@ func (a *API) PutEmployeeAddcaseCaseid(c *gin.Context, caseid string) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	uuid, err := uuid.Parse(caseid)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
 	var selectedCase *models.Case
 	for i, c := range *cases {
-		if *c.CaseId == caseid {
+		if *c.CaseId == uuid {
 			selectedCase = &(*cases)[i]
 		}
 	}
