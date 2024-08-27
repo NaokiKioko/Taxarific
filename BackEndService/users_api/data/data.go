@@ -158,9 +158,21 @@ func CreateEmployee(employee *models.PostAdminEmployeeJSONRequestBody) error {
 	return nil
 }
 
-func AddCaseToEmployee(*[]models.Case) (*models.Employee, error) {
-	// employee, err := GetEmployee()
-	panic("not implemented")
+func AddCaseToEmployee(newCase *models.Case, employeeId string) (*models.Employee, error) {
+	objId, err := GetObjectID(employeeId)
+	if err != nil {
+		return nil, err
+	}
+	_, err = employeeCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$push": bson.M{"cases": newCase}})
+	if err != nil {
+		return nil, err
+	}
+	var employee models.Employee
+	err = employeeCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&employee)
+	if err != nil {
+		return nil, err
+	}
+	return &employee, nil
 }
 
 // func GetEmployee(id string) (*models.Employee, error) {

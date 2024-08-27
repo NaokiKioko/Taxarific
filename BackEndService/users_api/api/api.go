@@ -147,7 +147,7 @@ func (a *API) GetEmployee(c *gin.Context) {
 			Cases: employee.Cases,
 		}
 	}
-	c.JSON(200, employees)
+	c.JSON(200, employeeResponses)
 }
 
 // GetUser implements ServerInterface.
@@ -227,6 +227,7 @@ func (a *API) PostAdminEmployee(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	c.JSON(201, gin.H{"message": "employee created"})
 }
 
 // PostLogin implements ServerInterface.
@@ -338,7 +339,13 @@ func (a *API) PutEmployeeAddcaseCaseid(c *gin.Context, caseid string) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	employee, err := data.AddCaseToEmployee(cases)
+	var selectedCase *models.Case
+	for i, c := range *cases {
+		if *c.CaseId == caseid {
+			selectedCase = &(*cases)[i]
+		}
+	}
+	employee, err := data.AddCaseToEmployee(selectedCase, claim.UserId)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
