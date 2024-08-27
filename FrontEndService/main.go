@@ -18,8 +18,8 @@ var usersBackendURl string = "http://backend-users-api:8080"
 // var domainName string = "Taxarific.com"
 var domainName string = "http://localhost:3000"
 
-
 type User struct {
+	Id       string              `json:"id,omitempty"`
 	Address  string              `json:"address,omitempty"`
 	City     string              `json:"city,omitempty"`
 	Email    openapi_types.Email `json:"email"`
@@ -28,6 +28,7 @@ type User struct {
 	Phone    string              `json:"phone,omitempty"`
 	State    string              `json:"state,omitempty"`
 	Zip      string              `json:"zip,omitempty"`
+	omitempty string 			`json:"omitempty,omitempty"`
 }
 type JWTResponse struct {
 	Token string `json:"token"`
@@ -43,7 +44,9 @@ func main() {
 
 	// Define routes
 	router.GET("/", handleIndex)
-	router.GET("/tax", handleTax)
+	router.GET("/case", handleClaim)
+	// router.POST("/case", handleClaimPost)
+	router.GET("/case/view", handleClaimView)
 
 	router.GET("/start", handleStart)
 	router.GET("/quiz", handleQuiz)
@@ -52,6 +55,10 @@ func main() {
 	router.GET("/employee/login", handleRmployeeLogin)
 	router.GET("/admin/login", handleAdminLogin)
 
+	router.GET("/employee/create", handleEmplyeeCreate)
+	router.GET("/employee", handleEmplyee)
+	router.POST("/employee", handleEmployeePost)
+	router.GET("/user", handleUser)
 
 	router.POST("/login", handleLoginPost)
 	router.GET("/logout", handleLogout)
@@ -59,6 +66,12 @@ func main() {
 
 	router.GET("/signup", handleSignup)
 	router.POST("/signup", handleSignupPost)
+
+	router.GET("/profile", handleProfile)
+	// router.GET("/profile/update", handleProfileUpdate)
+	// router.PUT("/profile", handleProfilePut)
+
+	// router.GET("/claim", handleClaim)
 
 	// Start server
 	router.Run(":3000")
@@ -79,8 +92,12 @@ func handleIndex(c *gin.Context) {
 	renderTemplate(c, "index/guest.html", nil)
 }
 
-func handleTax(c *gin.Context) {
+func handleClaim(c *gin.Context) {
 	renderTemplate(c, "tax.html", nil)
+}
+
+func handleClaimView(c *gin.Context) {
+	renderTemplate(c, "cases.html", nil)
 }
 
 func handleStart(c *gin.Context) {
@@ -116,7 +133,7 @@ func handleStart(c *gin.Context) {
 		renderTemplate(c, "nothing.html", nil)
 		return
 	}
-	
+
 	renderTemplate(c, "login/signup.html", nil)
 }
 
@@ -198,7 +215,7 @@ func handleLoginPost(c *gin.Context) {
 	println("JWTResponse Token:")
 	println(JWTResponse.Token)
 
-	c.SetCookie("JWT", "Bearer "+JWTResponse.Token, 3600, "/", domainName, false, true)
+	c.SetCookie("JWT", JWTResponse.Token, 3600, "/", domainName, false, true)
 	c.SetCookie("role", "user", 3600, "/", domainName, false, true)
 	c.JSON(http.StatusOK, nil)
 }
@@ -243,13 +260,108 @@ func handleSignupPost(c *gin.Context) {
 	println("JWTResponse Token:")
 	println(JWTResponse.Token)
 
-	c.SetCookie("JWT", "Bearer "+JWTResponse.Token, 3600, "/", domainName, false, true)
+	c.SetCookie("JWT", JWTResponse.Token, 3600, "/", domainName, false, true)
 	c.SetCookie("role", "user", 3600, "/", domainName, false, true)
+	c.JSON(http.StatusOK, nil)
+}
+
+func handleEmplyee(c *gin.Context) {
+	JWT := c.Query("JWT")
+	if JWT == "" {
+		renderTemplate(c, "login/employeelogin.html", nil)
+		return
+	}
+	role := c.Query("role")
+	if role != "admin" {
+		renderTemplate(c, "nothing.html", nil)
+		return
+	}
+
+	Employees := []User{}
+	err := SendRequest("GET", nil, usersBackendURl+"/employee", &Employees, JWT)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
+		return
+	}
+	data := struct {
+		Employees []User
+	}{
+		Employees: Employees,
+	}
+	renderTemplate(c, "employee.html", data)
+}
+
+func handleUser(c *gin.Context) {
+	JWT := c.Query("JWT")
+	if JWT == "" {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+	role := c.Query("role")
+	if role != "admin" {
+		renderTemplate(c, "nothing.html", nil)
+		return
+	}
+
+	Users := []User{}
+	err := SendRequest("GET", nil, usersBackendURl+"/user", &Users, JWT)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
+		return
+	}
+	data := struct {
+		Users []User
+	}{
+		Users: Users,
+	}
+	renderTemplate(c, "user.html", data)
+}
+
+func handleEmplyeeCreate(c *gin.Context) {
+	renderTemplate(c, "employeeCreate.html", nil)
+}
+
+func handleEmployeePost(c *gin.Context) {
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+	name := c.PostForm("name")
+
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		return
+	}
+
+	requestBody := User{
+		Email:    openapi_types.Email(email),
+		Name:     name,
+		Password: hashedPassword,
+	}
+
+	fmt.Println(requestBody)
+
+	err = SendRequest("POST", requestBody, usersBackendURl+"/employee", nil, "")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, nil)
 }
 
 func handleSignup(c *gin.Context) {
 	renderTemplate(c, "login/signup.html", nil)
+}
+
+func handleProfile(c *gin.Context) {
+	jwt, err := c.Cookie("JWT")
+	if err != nil {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+	user := User{}
+	SendRequest("GET", nil, usersBackendURl+"/user/profile", user, jwt)
+	fmt.Print(user)
+	renderTemplate(c, "profile.html", user)
 }
 
 func renderTemplate(c *gin.Context, templateName string, data interface{}) {
@@ -267,6 +379,7 @@ func renderTemplate(c *gin.Context, templateName string, data interface{}) {
 
 func SendRequest(httpverb string, data interface{}, url string, responseObj interface{}, authHeader string) error {
 	// Marshal the request data into JSON
+
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("failed to marshal data: %w", err)
@@ -288,9 +401,6 @@ func SendRequest(httpverb string, data interface{}, url string, responseObj inte
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to send request 1: %w", err)
-	}
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("failed to send request 2: %w", err)
 	}
 
 	defer resp.Body.Close()

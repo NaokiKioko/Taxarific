@@ -1,0 +1,26 @@
+<div id="mainDiv" class="bg-[#A89B9D] p-6 rounded-lg shadow-md max-w-lg mx-auto my-5">
+    <h2 class="text-2xl  font-bold text-center">Employees</h1>
+        <div>
+            <table class="table-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">ID</th>
+                        <th class="px-4 py-2">status</th>
+                        <th class="px-4 py-2">description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .cases}}
+                    <tr>
+                        <td class="px-4 py-2"><a href="/case/{{.id}}">{{.id}}</a></td>
+                        <td class="px-4 py-2">{{.status}}</td>
+                        <td class="px-4 py-2">{{.description}}</td>
+                        <td>
+                            <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" hx-delete="/case/{{.id}}">Delete</button>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+</div>
