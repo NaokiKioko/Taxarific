@@ -148,11 +148,19 @@ paths:
           application/json:
             schema:
               required:
-                - case
+                - marital_status
+                - dependents
+                - employment_status
+                - estimated_income
               properties:
-                case:
-                  type: object
-                  $ref: "#/components/schemas/Case"
+                marital_status:
+                  type: string
+                dependents:
+                  type: integer
+                employment_status:
+                  type: string
+                estimated_income:
+                  type: string
       responses:
         "201":
           description: Case submitted successfully.
@@ -374,9 +382,15 @@ components:
       properties:
         case_id:
           type: string
-        case_status:
+        marital_status:
           type: string
-        case_description:
+        dependents:
+          type: integer
+        employment_status:
+          type: string
+        estimated_income:
+          type: string
+        case_status:
           type: string
     Admin:
       type: object

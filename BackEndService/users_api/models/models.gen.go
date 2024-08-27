@@ -18,9 +18,12 @@ type Admin struct {
 
 // Case defines model for Case.
 type Case struct {
-	CaseDescription *string `json:"case_description,omitempty"`
-	CaseId          *string `json:"case_id,omitempty"`
-	CaseStatus      *string `json:"case_status,omitempty"`
+	CaseId           *string `json:"case_id,omitempty"`
+	CaseStatus       *string `json:"case_status,omitempty"`
+	Dependents       *int    `json:"dependents,omitempty"`
+	EmploymentStatus *string `json:"employment_status,omitempty"`
+	EstimatedIncome  *string `json:"estimated_income,omitempty"`
+	MaritalStatus    *string `json:"marital_status,omitempty"`
 }
 
 // Employee defines model for Employee.
@@ -97,7 +100,10 @@ type PostUserJSONBody struct {
 
 // PutUserCaseJSONBody defines parameters for PutUserCase.
 type PutUserCaseJSONBody struct {
-	Case Case `json:"case"`
+	Dependents       int    `json:"dependents"`
+	EmploymentStatus string `json:"employment_status"`
+	EstimatedIncome  string `json:"estimated_income"`
+	MaritalStatus    string `json:"marital_status"`
 }
 
 // PutUserProfileJSONBody defines parameters for PutUserProfile.

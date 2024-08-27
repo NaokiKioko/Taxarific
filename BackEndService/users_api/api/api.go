@@ -7,6 +7,7 @@ import (
 	"taxarific_users_api/mq"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/internal/uuid"
 )
 
 type API struct{}
@@ -91,7 +92,16 @@ func (a *API) PutUserCase(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	user.Case = &putUserCaseRequest.Case
+	caseStatus := "pending"
+
+	var newCase models.Case
+	newCase.CaseId = uuid.New()
+	newCase.CaseStatus = &caseStatus
+	newCase.CaseId = &putUserCaseRequest.EmploymentStatus
+	newCase.CaseStatus = &putUserCaseRequest.EstimatedIncome
+	newCase.Dependents = &putUserCaseRequest.Dependents
+	newCase.MaritalStatus = &putUserCaseRequest.MaritalStatus
+	user.Case = &newCase
 	data.UpdateUser(claim.UserId, user)
 	c.JSON(201, gin.H{"message": "case added"})
 }
