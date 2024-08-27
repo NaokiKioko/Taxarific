@@ -25,15 +25,18 @@ func NewDB() error {
 	var err error
 	err = godotenv.Load(".env")
 	if err != nil {
+		fmt.Println("Error loading .env file")
 		return err
 	}
 	uri := os.Getenv("MONGO_CON_URI")
 	client, err = mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
+		fmt.Println("Error connecting to Atlas.." + os.Getenv("MONGO_CON_URI"))
 		return err
 	}
 	var result bson.M
 	if err := client.Database("Taxarific").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Decode(&result); err != nil {
+		fmt.Println("Error pinging Atlas")
 		return err
 	}
 	fmt.Println("Successfully connected to Atlas")
@@ -133,18 +136,6 @@ func UpdateUser(id string, user *models.User) error {
 	return nil
 }
 
-// func DeleteUser(id string) error {
-// 	objId, err := GetObjectID(id)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	_, err = userCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
 // Employees
 func CreateEmployee(employee *models.PostAdminEmployeeJSONRequestBody) error {
 	employee.Email = types.Email(strings.ToLower(string(employee.Email)))
@@ -155,8 +146,21 @@ func CreateEmployee(employee *models.PostAdminEmployeeJSONRequestBody) error {
 	return nil
 }
 
-func AddCaseToEmployee(*[]models.Case) (*models.Employee, error) {
-	employee, err := GetEmployee()
+func AddCaseToEmployee(newCase *models.Case, employeeId string) (*models.Employee, error) {
+	objId, err := GetObjectID(employeeId)
+	if err != nil {
+		return nil, err
+	}
+	_, err = employeeCollection().UpdateOne(context.Background(), bson.M{"_id": objId}, bson.M{"$push": bson.M{"cases": newCase}})
+	if err != nil {
+		return nil, err
+	}
+	var employee models.Employee
+	err = employeeCollection().FindOne(context.Background(), bson.M{"_id": objId}).Decode(&employee)
+	if err != nil {
+		return nil, err
+	}
+	return &employee, nil
 }
 
 // func GetEmployee(id string) (*models.Employee, error) {

@@ -3,14 +3,14 @@ services:
   backend-users-api:
     build: ./BackEndService/users_api
     ports:
-      - "8080"
-    restart: on-failure
+      - "8080:8080"
+    # restart: on-failure
     networks:
       - taxarific
   email-service:
     build: ./BackEndService/email_service
     ports:
-      - "8082"
+      - "8081:8081"
     restart: on-failure
     depends_on:
       - kafka

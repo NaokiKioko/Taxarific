@@ -7,12 +7,22 @@ import (
 	"taxarific_users_api/mq"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/internal/uuid"
 )
 
 type API struct{}
 
 // GetCase implements ServerInterface.
 func (a *API) GetCase(c *gin.Context) {
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "admin" && claim.Role != "employee" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
 	cases, err := getAllCases()
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -23,6 +33,15 @@ func (a *API) GetCase(c *gin.Context) {
 
 // GetCasePending implements ServerInterface.
 func (a *API) GetCasePending(c *gin.Context) {
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "admin" && claim.Role != "employee" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
 	cases, err := getAllCases()
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -49,7 +68,7 @@ func (a *API) GetUserProfile(c *gin.Context) {
 		return
 	}
 	*user = models.User{
-		Id: 	user.Id,
+		Id:    user.Id,
 		Email: user.Email,
 		Name:  user.Name,
 	}
@@ -73,7 +92,18 @@ func (a *API) PutUserCase(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	user.Case = &putUserCaseRequest.Case
+	caseStatus := "pending"
+
+	var newCase models.Case
+	newCase.CaseId = uuid.New()
+	newCase.CaseStatus = &caseStatus
+	newCase.CaseId = &putUserCaseRequest.EmploymentStatus
+	newCase.CaseStatus = &putUserCaseRequest.EstimatedIncome
+	newCase.Dependents = &putUserCaseRequest.Dependents
+	newCase.MaritalStatus = &putUserCaseRequest.MaritalStatus
+	user.Case = &newCase
+	data.UpdateUser(claim.UserId, user)
+	c.JSON(201, gin.H{"message": "case added"})
 }
 
 // PutUserProfile implements ServerInterface.
@@ -118,7 +148,15 @@ func (a *API) GetAdmin(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, admins)
+	adminsResponse := make([]models.UserResponse, len(*admins))
+	for i, admin := range *admins {
+		adminsResponse[i] = models.UserResponse{
+			Email: &admin.Email,
+			Id:    &admin.Id,
+			Name:  &admin.Name,
+		}
+	}
+	c.JSON(200, adminsResponse)
 }
 
 // GetEmployee implements ServerInterface.
@@ -128,7 +166,16 @@ func (a *API) GetEmployee(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, employees)
+	employeeResponses := make([]models.EmployeeResponse, len(*employees))
+	for i, employee := range *employees {
+		employeeResponses[i] = models.EmployeeResponse{
+			Email: &employee.Email,
+			Id:    &employee.Id,
+			Name:  &employee.Name,
+			Cases: employee.Cases,
+		}
+	}
+	c.JSON(200, employeeResponses)
 }
 
 // GetUser implements ServerInterface.
@@ -138,7 +185,15 @@ func (a *API) GetUser(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, users)
+	userResponses := make([]models.UserResponse, len(*users))
+	for i, user := range *users {
+		userResponses[i] = models.UserResponse{
+			Email: &user.Email,
+			Id:    &user.Id,
+			Name:  &user.Name,
+		}
+	}
+	c.JSON(200, userResponses)
 }
 
 // PostAdmin implements ServerInterface.
@@ -200,6 +255,7 @@ func (a *API) PostAdminEmployee(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	c.JSON(201, gin.H{"message": "employee created"})
 }
 
 // PostLogin implements ServerInterface.
@@ -311,7 +367,13 @@ func (a *API) PutEmployeeAddcaseCaseid(c *gin.Context, caseid string) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	employee, err := data.AddCaseToEmployee(cases)
+	var selectedCase *models.Case
+	for i, c := range *cases {
+		if *c.CaseId == caseid {
+			selectedCase = &(*cases)[i]
+		}
+	}
+	employee, err := data.AddCaseToEmployee(selectedCase, claim.UserId)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

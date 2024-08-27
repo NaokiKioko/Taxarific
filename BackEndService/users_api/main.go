@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"taxarific_users_api/api"
 	"taxarific_users_api/data"
 
@@ -22,7 +23,7 @@ func newServer(userAPI *api.API) *gin.Engine {
 func main() {
 	err := data.NewDB()
 	if err != nil {
-		panic(err)
+		log.Fatalln(err.Error())
 	}
 	server := newServer(api.NewAPI())
 	server.Run(":8080")

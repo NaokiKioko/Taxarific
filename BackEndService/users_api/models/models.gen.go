@@ -13,33 +13,38 @@ type Admin struct {
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
-	Password *string             `json:"omitempty"`
+	Password *string             `json:"password,omitempty"`
 }
 
 // Case defines model for Case.
 type Case struct {
-	CaseDescription *string `json:"case_description,omitempty"`
-	CaseId          *string `json:"case_id,omitempty"`
-	CaseStatus      *string `json:"case_status,omitempty"`
+	CaseId           *string `json:"case_id,omitempty"`
+	CaseStatus       *string `json:"case_status,omitempty"`
+	Dependents       *int    `json:"dependents,omitempty"`
+	EmploymentStatus *string `json:"employment_status,omitempty"`
+	EstimatedIncome  *string `json:"estimated_income,omitempty"`
+	MaritalStatus    *string `json:"marital_status,omitempty"`
 }
 
 // Employee defines model for Employee.
 type Employee struct {
 	Cases *[]struct {
-		CaseId *string `json:"case_id,omitempty"`
+		UserId *primitive.ObjectID `json:"user_id,omitempty"`
 	} `json:"cases,omitempty"`
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
-	Password *string             `json:"omitempty"`
+	Password *string             `json:"password,omitempty"`
 }
 
 // EmployeeResponse defines model for EmployeeResponse.
 type EmployeeResponse struct {
-	Cases *[]Case `json:"cases,omitempty"`
-	Email *string `json:"email,omitempty"`
-	Id    *string `json:"id,omitempty"`
-	Name  *string `json:"name,omitempty"`
+	Cases *[]struct {
+		UserId *primitive.ObjectID `json:"user_id,omitempty"`
+	} `json:"cases,omitempty"`
+	Email *openapi_types.Email `json:"email,omitempty"`
+	Id    *primitive.ObjectID  `bson:"_id, omitempty" json:"id,omitempty"`
+	Name  *string              `json:"name,omitempty"`
 }
 
 // User defines model for User.
@@ -48,14 +53,14 @@ type User struct {
 	Email    openapi_types.Email `json:"email"`
 	Id       primitive.ObjectID  `bson:"_id, omitempty" json:"id"`
 	Name     string              `json:"name"`
-	Password *string             `json:"omitempty"`
+	Password *string             `json:"password,omitempty"`
 }
 
 // UserResponse defines model for UserResponse.
 type UserResponse struct {
-	Email *string `json:"email,omitempty"`
-	Id    *string `json:"id,omitempty"`
-	Name  *string `json:"name,omitempty"`
+	Email *openapi_types.Email `json:"email,omitempty"`
+	Id    *primitive.ObjectID  `bson:"_id, omitempty" json:"id,omitempty"`
+	Name  *string              `json:"name,omitempty"`
 }
 
 // PostAdminJSONBody defines parameters for PostAdmin.
@@ -95,7 +100,10 @@ type PostUserJSONBody struct {
 
 // PutUserCaseJSONBody defines parameters for PutUserCase.
 type PutUserCaseJSONBody struct {
-	Case Case `json:"case"`
+	Dependents       int    `json:"dependents"`
+	EmploymentStatus string `json:"employment_status"`
+	EstimatedIncome  string `json:"estimated_income"`
+	MaritalStatus    string `json:"marital_status"`
 }
 
 // PutUserProfileJSONBody defines parameters for PutUserProfile.
