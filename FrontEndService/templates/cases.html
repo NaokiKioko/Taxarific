@@ -5,17 +5,23 @@
                 <thead>
                     <tr>
                         <th class="px-4 py-2">ID</th>
-                        <th class="px-4 py-2">status</th>
-                        <th class="px-4 py-2">description</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Marital Status</th>
+                        <th class="px-4 py-2">Dependents</th>
+                        <th class="px-4 py-2">Employment Status</th>
+                        <th class="px-4 py-2">Estimated Income</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{range .cases}}
+                    {{range .Cases}}
                     <tr>
-                        <td class="px-4 py-2"><a href="/case/{{.id}}">{{.id}}</a></td>
-                        <td class="px-4 py-2">{{.status}}</td>
-                        <td class="px-4 py-2">{{.description}}</td>
+                        <td class="px-4 py-2"><a href="/case/{{.Case_id}}">{{.Case_id}}</a></td>
+                        <th class="px-4 py-2">{{.Case_status}}</th>
+                        <th class="px-4 py-2">{{.Marital_status}}</th>
+                        <th class="px-4 py-2">{{.Dependents}}</th>
+                        <th class="px-4 py-2">{{.Employment_status}}</th>
+                        <th class="px-4 py-2">{{.Estimated_income}}</th>
                         <td>
                             <button class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded" hx-delete="/case/{{.id}}">Delete</button>
                         </td>

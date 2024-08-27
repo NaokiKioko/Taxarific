@@ -20,30 +20,31 @@ var usersBackendURl string = "http://backend-users-api:8080"
 var domainName string = "http://localhost:3000"
 
 type User struct {
-	Id        string              `json:"id,omitempty"`
-	Address   string              `json:"address,omitempty"`
-	City      string              `json:"city,omitempty"`
-	Email     openapi_types.Email `json:"email"`
-	Name      string              `json:"name"`
-	Password  string              `json:"password"`
-	Phone     string              `json:"phone,omitempty"`
-	State     string              `json:"state,omitempty"`
-	Zip       string              `json:"zip,omitempty"`
-	omitempty string              `json:"omitempty,omitempty"`
+	Id       string              `json:"id,omitempty"`
+	Address  string              `json:"address,omitempty"`
+	City     string              `json:"city,omitempty"`
+	Email    openapi_types.Email `json:"email"`
+	Name     string              `json:"name"`
+	Password string              `json:"password"`
+	Phone    string              `json:"phone,omitempty"`
+	State    string              `json:"state,omitempty"`
+	Zip      string              `json:"zip,omitempty"`
 }
 type JWTResponse struct {
 	Token string `json:"token"`
 }
 type LoginRequest struct {
-	Username string `json:"username"`
+	Username string `json:"email"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
 }
-type QuizAnswer struct {
+type Case struct {
+	Case_id           string `json:"case_id,omitempty"`
 	Marital_status    string `json:"marital_status"`
 	Dependents        int    `json:"dependents"`
 	Employment_status string `json:"employment_status"`
 	Estimated_income  string `json:"estimated_income"`
+	Case_status       string `json:"case_status,omitempty"`
 }
 
 func main() {
@@ -101,11 +102,24 @@ func handleIndex(c *gin.Context) {
 }
 
 func handleCase(c *gin.Context) {
-	renderTemplate(c, "case.html", nil)
+	renderTemplate(c, "caseSubmit.html", nil)
 }
 
 func handleCaseView(c *gin.Context) {
-	renderTemplate(c, "cases.html", nil)
+	jwt := c.Query("JWT")
+	if jwt == "" {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+	Cases := []Case{}
+	data := struct {
+		Cases []Case
+	}{
+		Cases: Cases,
+	}
+
+	SendRequest("GET", nil, usersBackendURl+"case", data, jwt)
+	renderTemplate(c, "cases.html", data)
 }
 
 func handleStart(c *gin.Context) {
@@ -171,20 +185,21 @@ func handleQuizPost(c *gin.Context) {
 	employment_status := c.PostForm("employment_status")
 	estimated_income := c.PostForm("estimated_income")
 
-	QuizAnswer := QuizAnswer{
+	Case := Case{
 		Marital_status:    marital_status,
 		Dependents:        dependentsInt,
 		Employment_status: employment_status,
 		Estimated_income:  estimated_income,
 	}
 
-	println("QuizAnswer:")
-	println(QuizAnswer.Marital_status)
-	println(QuizAnswer.Dependents)
-	println(QuizAnswer.Employment_status)
-	println(QuizAnswer.Estimated_income)
+	println("Info:")
+	println("Marital Status: " + Case.Marital_status)
+	print("Dependents: ")
+	println(Case.Dependents)
+	println("Employment_status: " + Case.Employment_status)
+	println("Estimated Income: " + Case.Estimated_income)
 
-	SendRequest("POST", QuizAnswer, usersBackendURl+"/user/case", nil, jwt)
+	SendRequest("PUT", Case, usersBackendURl+"/user/case", nil, jwt)
 
 	c.JSON(http.StatusOK, nil)
 
@@ -453,12 +468,18 @@ func SendRequest(httpverb string, data interface{}, url string, responseObj inte
 	}
 
 	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		println(resp.StatusCode)
+		return fmt.Errorf("failed to send request 2: %w", err)
+	}
 
-	// Decode the response body into the response object
-	err = json.NewDecoder(resp.Body).Decode(responseObj)
-	if err != nil {
-		println("Failed to decode response")
-		return fmt.Errorf("failed to decode response: %w", err)
+	if responseObj != nil {
+		// Decode the response body into the response object
+		err = json.NewDecoder(resp.Body).Decode(responseObj)
+		if err != nil {
+			println("Failed to decode response")
+			return fmt.Errorf("failed to decode response: %w", err)
+		}
 	}
 	return nil
 }
