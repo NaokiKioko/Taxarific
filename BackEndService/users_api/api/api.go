@@ -99,7 +99,7 @@ func (a *API) PutUserCase(c *gin.Context) {
 	newCase.CaseId = &uuid
 	newCase.CaseStatus = &caseStatus
 	newCase.EmploymentStatus = &putUserCaseRequest.EmploymentStatus
-	newCase.CaseStatus = &putUserCaseRequest.EstimatedIncome
+	newCase.EstimatedIncome = &putUserCaseRequest.EstimatedIncome
 	newCase.Dependents = &putUserCaseRequest.Dependents
 	newCase.MaritalStatus = &putUserCaseRequest.MaritalStatus
 	user.Case = &newCase
