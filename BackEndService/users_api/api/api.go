@@ -13,6 +13,15 @@ type API struct{}
 
 // GetCase implements ServerInterface.
 func (a *API) GetCase(c *gin.Context) {
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "admin" && claim.Role != "employee" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
 	cases, err := getAllCases()
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -23,6 +32,15 @@ func (a *API) GetCase(c *gin.Context) {
 
 // GetCasePending implements ServerInterface.
 func (a *API) GetCasePending(c *gin.Context) {
+	claim, err := auth.ValidateJWTToken(c.GetHeader("Authorization"))
+	if err != nil {
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+	if claim.Role != "admin" && claim.Role != "employee" {
+		c.JSON(401, gin.H{"error": "unauthorized"})
+		return
+	}
 	cases, err := getAllCases()
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})

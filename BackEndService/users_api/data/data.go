@@ -136,18 +136,6 @@ func UpdateUser(id string, user *models.User) error {
 	return nil
 }
 
-// func DeleteUser(id string) error {
-// 	objId, err := GetObjectID(id)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	_, err = userCollection().DeleteOne(context.Background(), bson.M{"_id": objId})
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
 // Employees
 func CreateEmployee(employee *models.PostAdminEmployeeJSONRequestBody) error {
 	employee.Email = types.Email(strings.ToLower(string(employee.Email)))
