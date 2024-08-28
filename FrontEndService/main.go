@@ -29,6 +29,7 @@ type User struct {
 	Phone    string              `json:"phone,omitempty"`
 	State    string              `json:"state,omitempty"`
 	Zip      string              `json:"zip,omitempty"`
+	Case    Case                `json:"case,omitempty"`
 }
 type JWTResponse struct {
 	Token string `json:"token"`

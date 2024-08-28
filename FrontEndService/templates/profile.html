@@ -11,6 +11,38 @@
                 <p>{{.Email}}</p>
             </div>
         </div>
+        {{if .Case}}
+        <div class="mb-6 flex space-x-4">
+            <label class="block text-sm font-bold mb-2">Marital status</label>
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+                <p >{{.Case.Marital_status}}</p>
+            </div>
+            <label class="block text-sm font-bold mb-2">Dependents</label>
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+                <p>{{.Case.Dependents}}</p>
+            </div>
+        </div>
+        <div class="mb-6 flex space-x-4">
+            <label class="block text-sm font-bold mb-2">Employment status</label>
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+                <p >{{.Case.Employment_status}}</p>
+            </div>
+            <label class="block text-sm font-bold mb-2">Estimated Income</label>
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+                <p>{{.Case.Estimated_income}}</p>
+            </div>
+        </div>
+        
+        <div class="mb-6 flex space-x-4">
+            <label class="block text-sm font-bold mb-2">Case Status</label>
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+                <p >{{.Case.Case_status}}</p>
+            </div>
+            <label class="block text-sm font-bold mb-2">Estimated Income</label>
+            <div class="mb-4 bg-[#cfcfea] rounded-lg px-4 w-1/2">
+            </div>
+        </div>
+    {{end}}
         
         <div class="mt-6 flex justify-center">
             <button hx-get="/profile/update" hx-target="#mainDiv" class="bg-[#575A4B] hover:bg-[#A89B9D] hover:text-[#2A2C24] text-[#CFCFEA] font-bold py-2 px-4 rounded">
