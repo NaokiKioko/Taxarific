@@ -1,14 +1,14 @@
 services:
   # !! Backend services
   backend-users-api:
-    build: ./BackEndService/users_api
+    image: morineth/taxarific-backend-user-api:latest
     ports:
       - "8080:8080"
-    restart: on-failure
+    # restart: on-failure
     networks:
       - taxarific
   email-service:
-    build: ./BackEndService/email_service
+    image: morineth/taxarific-backend-email-service:latest
     ports:
       - "8081:8081"
     restart: on-failure
@@ -46,7 +46,7 @@ services:
 
   # !! Frontend service
   frontend-service:
-    build: ./FrontEndService
+    image: morineth/taxarific-frontend:latest
     ports:
       - "80:80"
     restart: on-failure
