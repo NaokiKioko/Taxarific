@@ -17,7 +17,7 @@ import (
 var usersBackendURl string = "http://backend-users-api:8080"
 
 // var domainName string = "Taxarific.com"
-var domainName string = "http://localhost:3000"
+var domainName string = "http://localhost:80"
 
 type User struct {
 	Id       string              `json:"id,omitempty"`
@@ -77,14 +77,14 @@ func main() {
 	router.POST("/signup", handleSignupPost)
 
 	router.GET("/profile", handleProfile)
-	// router.GET("/profile/update", handleProfileUpdate)
-	// router.PUT("/profile", handleProfilePut)
+	router.GET("/profile/update", handleProfileUpdate)
+	router.PUT("/profile", handleProfilePut)
 
 	// router.GET("/claim", handleClaim)
 
 	// Start server
-	router.Run(":3000")
-	print("Server started on port 3000")
+	router.Run(":80")
+	print("Server started on port 80")
 }
 
 func handleIndex(c *gin.Context) {
@@ -101,10 +101,6 @@ func handleIndex(c *gin.Context) {
 	renderTemplate(c, "index/guest.html", nil)
 }
 
-func handleCase(c *gin.Context) {
-	renderTemplate(c, "caseSubmit.html", nil)
-}
-
 func handleCaseView(c *gin.Context) {
 	jwt := c.Query("JWT")
 	if jwt == "" {
@@ -118,7 +114,7 @@ func handleCaseView(c *gin.Context) {
 		Cases: Cases,
 	}
 
-	SendRequest("GET", nil, usersBackendURl+"/case/pending", data, jwt)
+	SendRequest("GET", nil, usersBackendURl+"/case/pending", &data, jwt)
 	renderTemplate(c, "cases.html", data)
 }
 
@@ -158,6 +154,8 @@ func handleStart(c *gin.Context) {
 
 	renderTemplate(c, "login/signup.html", nil)
 }
+
+// ----------------- Quiz / Case -----------------
 
 func handleQuiz(c *gin.Context) {
 	renderTemplate(c, "quiz.html", nil)
@@ -202,8 +200,13 @@ func handleQuizPost(c *gin.Context) {
 	SendRequest("PUT", Case, usersBackendURl+"/user/case", nil, jwt)
 
 	c.JSON(http.StatusOK, nil)
-
 }
+
+func handleCase(c *gin.Context) {
+	renderTemplate(c, "caseSubmit.html", nil)
+}
+
+// ----------------- Login -----------------
 
 func handleUserLogin(c *gin.Context) {
 	role, err := c.Cookie("role")
@@ -284,50 +287,8 @@ func handleLoginPost(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-func handleSignupPost(c *gin.Context) {
-	// id := primitive.NewObjectID()
-	email := c.PostForm("email")
-	password := c.PostForm("password")
-	name := c.PostForm("name")
-	phone := c.PostForm("phone")
-	address := c.PostForm("address")
-	city := c.PostForm("city")
-	state := c.PostForm("state")
-	zip := c.PostForm("zip")
 
-	hashedPassword, err := HashPassword(password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
-		return
-	}
-
-	requestBody := User{
-		Address:  address,
-		City:     city,
-		Email:    openapi_types.Email(email),
-		Name:     name,
-		Password: hashedPassword,
-		Phone:    phone,
-		State:    state,
-		Zip:      zip,
-	}
-
-	fmt.Println(requestBody)
-
-	JWTResponse := JWTResponse{}
-	err = SendRequest("POST", requestBody, usersBackendURl+"/user", &JWTResponse, "")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
-		return
-	}
-
-	println("JWTResponse Token:")
-	println(JWTResponse.Token)
-
-	c.SetCookie("JWT", JWTResponse.Token, 3600, "/", domainName, false, true)
-	c.SetCookie("role", "user", 3600, "/", domainName, false, true)
-	c.JSON(http.StatusOK, nil)
-}
+// ----------------- Display Users -----------------
 
 func handleEmplyee(c *gin.Context) {
 	JWT := c.Query("JWT")
@@ -381,6 +342,52 @@ func handleUser(c *gin.Context) {
 	renderTemplate(c, "user.html", data)
 }
 
+// ----------------- Create Users -----------------
+func handleSignupPost(c *gin.Context) {
+	// id := primitive.NewObjectID()
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+	name := c.PostForm("name")
+	phone := c.PostForm("phone")
+	address := c.PostForm("address")
+	city := c.PostForm("city")
+	state := c.PostForm("state")
+	zip := c.PostForm("zip")
+
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		return
+	}
+
+	requestBody := User{
+		Address:  address,
+		City:     city,
+		Email:    openapi_types.Email(email),
+		Name:     name,
+		Password: hashedPassword,
+		Phone:    phone,
+		State:    state,
+		Zip:      zip,
+	}
+
+	fmt.Println(requestBody)
+
+	JWTResponse := JWTResponse{}
+	err = SendRequest("POST", requestBody, usersBackendURl+"/user", &JWTResponse, "")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
+		return
+	}
+
+	println("JWTResponse Token:")
+	println(JWTResponse.Token)
+
+	c.SetCookie("JWT", JWTResponse.Token, 3600, "/", domainName, false, true)
+	c.SetCookie("role", "user", 3600, "/", domainName, false, true)
+	c.JSON(http.StatusOK, nil)
+}
+
 func handleEmplyeeCreate(c *gin.Context) {
 	renderTemplate(c, "employeeCreate.html", nil)
 }
@@ -415,6 +422,7 @@ func handleEmployeePost(c *gin.Context) {
 func handleSignup(c *gin.Context) {
 	renderTemplate(c, "login/signup.html", nil)
 }
+// ----------------- Profile -----------------
 
 func handleProfile(c *gin.Context) {
 	jwt, err := c.Cookie("JWT")
@@ -422,12 +430,77 @@ func handleProfile(c *gin.Context) {
 		renderTemplate(c, "login/userlogin.html", nil)
 		return
 	}
+	if jwt == "" {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+
 	user := User{}
-	SendRequest("GET", nil, usersBackendURl+"/user/profile", user, jwt)
+	SendRequest("GET", nil, usersBackendURl+"/user/profile", &user, jwt)
 	fmt.Print("Name: " + user.Name)
 	fmt.Print("Email: " + user.Email)
 	renderTemplate(c, "profile.html", user)
 }
+
+func handleProfileUpdate(c *gin.Context) {
+	jwt, err := c.Cookie("JWT")
+	if err != nil {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+	if jwt == "" {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+
+	user := User{}
+	SendRequest("GET", nil, usersBackendURl+"/user/profile", &user, jwt)
+	fmt.Print("Name: " + user.Name)
+	fmt.Print("Email: " + user.Email)
+
+	renderTemplate(c, "profileEdit.html", user)
+}
+
+func handleProfilePut(c *gin.Context) {
+	jwt, err := c.Cookie("JWT")
+	if err != nil {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+	if jwt == "" {
+		renderTemplate(c, "login/userlogin.html", nil)
+		return
+	}
+
+	email := c.PostForm("email")
+	name := c.PostForm("name")
+	// phone := c.PostForm("phone")
+	// address := c.PostForm("address")
+	// city := c.PostForm("city")
+	// state := c.PostForm("state")
+	// zip := c.PostForm("zip")
+
+	requestBody := User{
+		Email:   openapi_types.Email(email),
+		Name:    name,
+		// Address: address,
+		// City:    city,
+		// Phone:   phone,
+		// State:   state,
+		// Zip:     zip,
+	}
+
+	fmt.Println(requestBody)
+
+	err = SendRequest("PUT", requestBody, usersBackendURl+"/user/profile", nil, jwt)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request. Signup: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, nil)
+}
+
+// ----------------- Helper -----------------
 
 func renderTemplate(c *gin.Context, templateName string, data interface{}) {
 	t, err := template.ParseFiles("templates/" + templateName)
@@ -482,7 +555,6 @@ func SendRequest(httpverb string, data interface{}, url string, responseObj inte
 			return fmt.Errorf("failed to decode response: %w", err)
 		}
 	}
-	print("end of SendRequest, statis")
 	return nil
 }
 
