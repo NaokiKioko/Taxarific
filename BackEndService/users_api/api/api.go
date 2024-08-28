@@ -71,6 +71,7 @@ func (a *API) GetUserProfile(c *gin.Context) {
 		Id:    user.Id,
 		Email: user.Email,
 		Name:  user.Name,
+		Case: user.Case,
 	}
 	c.JSON(200, user)
 }
