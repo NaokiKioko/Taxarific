@@ -270,7 +270,7 @@ func (a *API) PostLogin(c *gin.Context) {
 	if *login.Role == "user" {
 		user, err := data.Userlogin(string(login.Email))
 		if err != nil {
-			c.JSON(401, gin.H{"error": err.Error()})
+			c.JSON(404, gin.H{"error": err.Error()})
 			return
 		}
 		err = auth.CheckPassword(*user.Password, login.Password)
@@ -289,7 +289,7 @@ func (a *API) PostLogin(c *gin.Context) {
 	if *login.Role == "admin" {
 		admin, err := data.AdminLogin(string(login.Email))
 		if err != nil {
-			c.JSON(401, gin.H{"error": err.Error()})
+			c.JSON(404, gin.H{"error": err.Error()})
 			return
 		}
 		err = auth.CheckPassword(*admin.Password, login.Password)
@@ -308,7 +308,7 @@ func (a *API) PostLogin(c *gin.Context) {
 	if *login.Role == "employee" {
 		employee, err := data.EmployeeLogin(string(login.Email))
 		if err != nil {
-			c.JSON(401, gin.H{"error": err.Error()})
+			c.JSON(404, gin.H{"error": err.Error()})
 			return
 		}
 		err = auth.CheckPassword(*employee.Password, login.Password)
