@@ -48,7 +48,7 @@ services:
   frontend-service:
     build: ./FrontEndService
     ports:
-      - "3000:3000"
+      - "3000:80"
     restart: on-failure
     networks:
       - taxarific
